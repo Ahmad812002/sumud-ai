@@ -1,1 +1,10 @@
 @import "tailwindcss";
+
+@theme {
+  --color-palestine-red: #C8102E;
+  --color-palestine-green: #007A3D;
+  --color-bg-primary: #1A1A1A;
+  --color-bg-secondary: #242424;
+  --color-bg-card: #2A2A2A;
+  --color-border: #2E2E2E;
+}

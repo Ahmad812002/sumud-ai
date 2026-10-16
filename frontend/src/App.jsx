@@ -1,13 +1,21 @@
-import { useState } from 'react'
-import heroImg from './assets/hero.png'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import './App.css'
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import Layout from './components/layout/Layout'
+import Dashboard from './pages/Dashboard'
+import JobScorer from './pages/JobScorer'
+import Settings from './pages/Settings'
+import Chat from './pages/Chat'
 
 export default function App() {
   return (
-    <div className="bg-blue-500 text-white p-4">
-      Sumud AI is running
-    </div>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Layout />}>
+          <Route index element={<Dashboard />} />
+          <Route path="/scorer" element={<JobScorer />} />
+          <Route path="/settings" element={<Settings />} />
+          <Route path="/chat" element={<Chat />} />
+        </Route>
+      </Routes>
+    </BrowserRouter>
   )
 }
