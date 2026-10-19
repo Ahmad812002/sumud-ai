@@ -30,7 +30,6 @@ app.add_middleware(
 
 )
 
-app.mount("/static", StaticFiles(directory="static"), name="static")
 app.mount("/cv", StaticFiles(directory="knowledge_base/cv"), name="cv")
 app.mount("/knowledge_base", StaticFiles(directory="knowledge_base"), name="knowledge_base")
 

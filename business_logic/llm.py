@@ -106,8 +106,6 @@ def llm_chat(message):
         raise { "Authentication Error:": str(e) }
     
     messages_arr.append({"role": "assistant", "content": response.choices[0].message.content})
-
     if(response is None):
-        print("respone is none ")
         return { "ai_answer": "Sorry, I could not generate a response." }
     return response.choices[0].message.content
