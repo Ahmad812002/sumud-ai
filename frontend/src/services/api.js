@@ -12,8 +12,14 @@ const api = axios.create({
 export const scoreJob = (job_description) => {
     return api.post('/scorer', { job_description })
 }
-export const generateCoverLetter = (job_description) => {
-    return api.post('/cover_letter', { job_description })
+export const generateCoverLetter = (job_description, fitCategory, matchingPoints, gaps, profileChunks, reasoning) => {
+    return api.post('/cover_letter', { job_description,
+        fitCategory,
+        matchingPoints, 
+        gaps,
+        profileChunks,
+        reasoning
+     })
 }
 export const upsertPreferences = (preferences) => {
     return api.post('/upsert_preferences', {
@@ -24,7 +30,7 @@ export const upsertPreferences = (preferences) => {
 export const getPreferences = () => {
     return api.get('/get_preferences')
 }
-export const sendMessage = (message) => {
+export const chatWithAi = (message) => {
     return api.post('/chat', { message })
 }
 
@@ -54,11 +60,6 @@ export const ingestDocument = (file) => {
 export const getCV = () => {
     return api.get("/get_cv")
 }
-
-export const chatWithAi = (message) => {
-    return api.post("chat", message)
-}
-   
 
 
 export default api

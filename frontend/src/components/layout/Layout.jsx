@@ -3,7 +3,7 @@ import Sidebar from './Sidebar'
 
 export default function Layout() {
   return (
-    <div className="flex flex-col h-screen bg-[#1A1A1A]">
+    <div className="flex flex-col h-screen bg-[#1A1A1A] ">
       
       {/* Top bar */}
       <div className="flex justify-between items-center px-6 py-3 bg-[#1A1A1A] border-b border-[#2E2E2E] shrink-0">
@@ -16,7 +16,7 @@ export default function Layout() {
       {/* Body */}
       <div className="flex flex-1 overflow-hidden">
         <Sidebar />
-        <main className="flex-1 overflow-hidden bg-[#242424]">
+        <main className="flex-1 overflow-y-auto bg-[#242424]">
           <Outlet />
         </main>
       </div>

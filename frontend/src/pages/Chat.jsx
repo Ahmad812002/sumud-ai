@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react"
-import { sendMessage } from "../services/api"
+import { chatWithAi } from "../services/api"
 
 function Spinner() {
     return (
@@ -36,17 +36,19 @@ export default function Chat() {
         setLoading(true)
 
         try {
-            const res = await sendMessage(input)
-            if(res.data.ai_answer == null){
+            const res = await chatWithAi(input)
+            if(res.data.ai_answer != null){
                 setMessages(prev => [...prev, {
-                role: 'assistant',
-                content: 'Sorry, something went wrong. the llm returning none response.'
-            }])
+                    role: 'assistant',
+                    content: res.data.ai_answer
+                }])
+            }else{
+                setMessages(prev => [...prev, {
+                    role: 'assistant',
+                    content: 'Sorry, something went wrong. the llm returning none response.'
+                }])
             }
-            setMessages(prev => [...prev, {
-                role: 'assistant',
-                content: res.data.ai_answer
-            }])
+            
         } catch (err) {
             console.error(err)
             setMessages(prev => [...prev, {
