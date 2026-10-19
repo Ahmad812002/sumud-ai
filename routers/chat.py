@@ -17,7 +17,6 @@ class ChatRequest(BaseModel):
 def chat_bot(request: ChatRequest):
     try:
         reply = llm_chat(request.message)
-        print(reply)
         return {"ai_answer": reply}
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
