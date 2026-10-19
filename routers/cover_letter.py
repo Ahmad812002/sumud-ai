@@ -8,6 +8,7 @@ router = APIRouter()
 
 class CoverLetterRequest(BaseModel):
     job_description: str
+    fit_category: str = ""
     profile_chunks: str = ""
     matching_points: list[str] = []
     gaps: list[str] = []
@@ -18,15 +19,16 @@ class CoverLetterRequest(BaseModel):
 def generate_cover_letter(request: CoverLetterRequest):
     try:
         job_preferences = get_preferences_collection().get()["documents"]
-        scorer_result = run_scorer(request.job_description.strip(), job_preferences)
-        profile_chunks = process_job_description(request.job_description)
+        # scorer_result = run_scorer(request.job_description.strip(), job_preferences)
+        # profile_chunks = process_job_description(request.job_description)
 
-        generated_cover_letter = run_cover_letter(profile_chunks,
+        generated_cover_letter = run_cover_letter(request.profile_chunks,
                                                 request.job_description,
-                                                scorer_result['fit_category'],
-                                                scorer_result['matching_points'],
-                                                scorer_result['gaps'], 
-                                                scorer_result['reasoning'])
+                                                request.fit_category,
+                                                request.matching_points,
+                                                request.gaps, 
+                                                request.reasoning)
+        # print("cover letter: ", generated_cover_letter)
 
         if(generated_cover_letter['opening']):
             return {

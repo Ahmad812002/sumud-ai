@@ -33,6 +33,7 @@ export default function JobScorer() {
             setScorerResult(null)
             setCoverLetter(null)
             const res = await scoreJob(jobDescription)
+            console.log(res.data)
             setScorerResult(res.data)
         } catch (err) {
             console.error(err)
@@ -45,7 +46,13 @@ export default function JobScorer() {
     const handleGenerateCoverLetter = async () => {
         try {
             setLoadingCover(true)
-            const res = await generateCoverLetter(jobDescription)
+            const res = await generateCoverLetter(jobDescription,
+                scorerResult.fit_category,
+                scorerResult.matching_points, 
+                scorerResult.gaps,
+                scorerResult.profile_chunks,
+                scorerResult.reasoning
+            )
             const letter = res.data
             
             setCoverLetter(letter)
@@ -61,7 +68,7 @@ export default function JobScorer() {
     }
 
     return (
-        <div className="text-white p-6 max-w-6xl mx-auto ">
+        <div className="text-white p-6 max-w-6xl mx-auto overflow-y-auto translate-y-0">
 
             {/* Header */}
             <h1 className="text-2xl font-bold mb-1">Job Scorer</h1>
