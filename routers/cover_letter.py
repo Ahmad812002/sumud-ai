@@ -38,6 +38,8 @@ def generate_cover_letter(request: CoverLetterRequest):
                         "closing": generated_cover_letter['closing']
                         }
     except ValueError as e:
+        print(e)
         raise  HTTPException(status_code=400, detail=str(e))
     except Exception as e:
+        print(e)
         raise HTTPException(status_code=500, detail=str(e))

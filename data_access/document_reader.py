@@ -56,7 +56,7 @@ def add_embedding(file_path, doc_id):
             if(len(chunk.strip()) < 100):  # Skip chunks that are too short
                     continue
             embedding = get_embedding(chunk)
-            print(doc_id)
+            
             store_embedding(doc_id, chunk, embedding, source=file_path)
             doc_id = str(int(doc_id) + 1)
         return JSONResponse(status_code=201, content={"message": "Document ingested successfully"})

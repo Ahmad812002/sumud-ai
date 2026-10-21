@@ -8,21 +8,21 @@ def run_cover_letter(profile_chunks, job_description, fit_category, matching_poi
 
         formated_prompt = cover_letter_prompt(
             profile_chunks, 
-            job_description,
             fit_category,
             matching_points,
             gaps,
             reasoning
         )
-        response = llm_cover_letter(formated_prompt)
-
-        formated_response = format_cover_letter_json(response)
-        if(formated_response['opening'] is not None):
+        cover_letter_response = llm_cover_letter(formated_prompt, job_description)
+        # sometimes it returned as lazy object 
+        cover_letter_formated_response = format_cover_letter_json(str(cover_letter_response))
+        
+        if(cover_letter_formated_response['opening'] is not None):
             return {
-                        "opening": formated_response['opening'],
-                        "middle": formated_response['middle'],
-                        "gap": formated_response['gap'],
-                        "closing": formated_response['closing']
+                        "opening": cover_letter_formated_response['opening'],
+                        "middle": cover_letter_formated_response['middle'],
+                        "gap": cover_letter_formated_response['gap'],
+                        "closing": cover_letter_formated_response['closing']
                     }
     except Exception as e:
         raise ValueError(f"Error occurred while generating cover letter: {str(e)}")

@@ -16,13 +16,15 @@ def run_scorer(job_description: str, job_preferences: str):
         if(profile_chunks is None):
             return None
         
-        formatted_prompt = job_scorer_prompt(profile_chunks, job_preferences, job_description)
-        raw_result = llm_scorer(formatted_prompt)
+        formatted_prompt = job_scorer_prompt(profile_chunks, job_preferences)
+        
+        raw_result = llm_scorer(formatted_prompt, job_description)
 
-        if(raw_result is None or raw_result.strip() == ""):
+        if(raw_result is None or raw_result == ""):
             raise HTTPException(status_code=500, detail="LLM returned no response")
 
-        parsed = format_scorer_result_json(raw_result)
+        # this looks like string but aren't until resolved (lazy object)
+        parsed = format_scorer_result_json(str(raw_result))
         if(parsed is None):
             raise HTTPException(status_code=500, detail="LLM returned no response")
         return {
@@ -43,7 +45,7 @@ def run_scorer(job_description: str, job_preferences: str):
 def process_job_description(job_description):
     try:
         job_embedding = get_embedding(job_description)
-        profile_chunks = search_embedding(job_embedding)
+        profile_chunks = search_embedding(job_embedding, 15)
         if profile_chunks:
             return "\n".join([chunk['documents'] for chunk in profile_chunks])
         return None

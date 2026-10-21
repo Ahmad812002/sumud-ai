@@ -47,11 +47,11 @@ def store_embedding(doc_id, text, embedding, source):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error occurred while storing embedding: {str(e)}")
 # This function is to search the embedding in ChromaDB, it will take the query vector as input and return the top 3 closest documents.
-def search_embedding(query_vector):
+def search_embedding(query_vector, n_results):
     try:
         results = get_embeddings_collection().query(
                 query_embeddings=[query_vector],
-                n_results=10
+                n_results=n_results
 
             )
     except Exception as e:

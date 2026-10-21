@@ -3,6 +3,7 @@
 #Handleing prompt for chat_bot mode
 def chat_bot_prompt(chunks):
     system = ''
+    print(chunks)
     if(chunks is not None):
         system += f"these are the context to answer: {chunks}"
     system += f"""
@@ -18,7 +19,7 @@ def chat_bot_prompt(chunks):
     return ({"role": "system", "content": system})
 
 # Handleing prompt for job_seeker mode
-def job_scorer_prompt(chunks, preferences, job_description):    
+def job_scorer_prompt(chunks, preferences):    
     # next update plan to use an API text detictor to detect the user's input.
 
     if chunks:
@@ -27,7 +28,6 @@ def job_scorer_prompt(chunks, preferences, job_description):
         candidate_section = "There is no context available, please answer based on your knowledge."
     system_content = f"""
         You are an expert career coach, and interview prep partner use these info to help the user know a job score and if it's matches his career or not.
-        Job description: {job_description}.
 
         {candidate_section}.
         
@@ -62,7 +62,7 @@ def job_scorer_prompt(chunks, preferences, job_description):
     return ({"role": "system", "content": system_content})
 
 # Handling cover letter prompt
-def cover_letter_prompt(profile_candidate, job_description, fit_category, matching_points, gaps, reasoning):
+def cover_letter_prompt(profile_candidate, fit_category, matching_points, gaps, reasoning):
 
     if(matching_points is None or gaps is None or reasoning is None):
         system = system = f"""
@@ -70,7 +70,6 @@ def cover_letter_prompt(profile_candidate, job_description, fit_category, matchi
         
                 {{
                     You will receive profile user: {profile_candidate}, 
-                    and job description: {job_description}.
                 }}
         
                 All these instructions must be followed by user's profile and job description to generate a cover letter:
@@ -104,7 +103,7 @@ def cover_letter_prompt(profile_candidate, job_description, fit_category, matchi
             You are a cover letter generator.
 
             {{
-                You will receive profile user: {profile_candidate}, and job description: {job_description}.
+                You will receive profile user: {profile_candidate}.
                 These information are about job scorer results:
                 fit category: {fit_category},
                 matching points: {matching_points}, 

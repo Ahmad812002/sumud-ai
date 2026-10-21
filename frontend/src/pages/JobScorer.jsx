@@ -33,7 +33,6 @@ export default function JobScorer() {
             setScorerResult(null)
             setCoverLetter(null)
             const res = await scoreJob(jobDescription)
-            console.log(res.data)
             setScorerResult(res.data)
         } catch (err) {
             console.error(err)
@@ -61,7 +60,7 @@ export default function JobScorer() {
             )
         } catch (err) {
             console.error(err)
-            alert('Cover letter generation failed.')
+            alert('Cover letter generator failed.')
         } finally {
             setLoadingCover(false)
         }

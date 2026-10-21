@@ -37,16 +37,17 @@ export default function Chat() {
 
         try {
             const res = await chatWithAi(input)
+            console.log(res.data)
             if(res.data.ai_answer != null){
                 setMessages(prev => [...prev, {
                     role: 'assistant',
                     content: res.data.ai_answer
                 }])
-            }else{
-                setMessages(prev => [...prev, {
-                    role: 'assistant',
-                    content: 'Sorry, something went wrong. the llm returning none response.'
-                }])
+            // }else{
+            //     setMessages(prev => [...prev, {
+            //         role: 'assistant',
+            //         content: 'Sorry, something went wrong. the llm returning none response.'
+            //     }])
             }
             
         } catch (err) {

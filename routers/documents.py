@@ -44,9 +44,10 @@ async def ingest_document(file: UploadFile = File(...)):
         # Get the current maximum ID from the embeddings collection and increment it for the new document
         ids = get_embeddings_collection().get()["ids"]
         doc_id = str(max((int(i) for i in ids), default=0) + 1)
-        print("id inside endpoint: ", doc_id)
+
         os.makedirs("knowledge_base", exist_ok=True)
         file_path = f"knowledge_base/{file.filename}"
+        
         with open(file_path, "wb") as buffer:
             shutil.copyfileobj(file.file, buffer)
         return await asyncio.to_thread(add_embedding, file_path, doc_id)

@@ -11,8 +11,8 @@ def get_embedding(message):
         raise ValueError(f"Error occurred while getting embedding: {str(e)}")
 
 
-def get_embedding_result(embedded_vector):
+def get_embedding_result(embedded_vector, n_results):
     try:
-        return data_access.embeddings.search_embedding(embedded_vector)
+        return data_access.embeddings.search_embedding(embedded_vector, n_results)
     except Exception as e:
         raise ValueError(f"Error occurred while searching embedding: {str(e)}")
