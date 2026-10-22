@@ -5,7 +5,7 @@ pydantic
 openai
 python-dotenv
 nomic
-chromadb
+chromadb-client
 numpy
 python-docx
 requests
