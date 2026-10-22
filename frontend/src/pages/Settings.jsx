@@ -22,7 +22,7 @@ export default function Settings() {
 
     useEffect(() => {
         getCV()
-            .then(res => setCvUrl(`${import.meta.env.PORT}${res.data.cv_url}`))
+            .then(res => setCvUrl(`${import.meta.env.VITE_BASE_URL}${res.data.cv_url}`))
             .catch(() => setCvUrl(null))  // no CV yet, show upload zone
         getRecordsCount()
             .then(res => setCount(res.data))
@@ -58,7 +58,7 @@ export default function Settings() {
             const res = await ingestCV(file)
             
 
-            setCvUrl(`${import.meta.env.PORT}${res.data.cv_url}`)
+            setCvUrl(`${import.meta.env.VITE_BASE_URL}${res.data.cv_url}`)
         } catch (err) {
             console.error(err)
             alert('CV upload failed')
