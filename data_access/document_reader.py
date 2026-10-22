@@ -1,5 +1,4 @@
 import docx
-import PyPDF2
 from pypdf import PdfReader
 from fastapi import HTTPException
 from fastapi.responses import JSONResponse
