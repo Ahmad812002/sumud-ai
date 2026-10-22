@@ -4,6 +4,7 @@ from fastapi.staticfiles import StaticFiles
 from requests.help import main
 from routers import documents, scorer, chat, cover_letter, preferences
 from fastapi.middleware.cors import CORSMiddleware
+import os
 
 app = FastAPI()
 router = APIRouter()
@@ -18,6 +19,7 @@ origins = [
     "http://127.0.0.1:5173",
     "http://localhost:5174",
     "http://127.0.0.1:5174",
+    os.environ.get("VITE_BASE_URL"),
     "*"
     ]
 

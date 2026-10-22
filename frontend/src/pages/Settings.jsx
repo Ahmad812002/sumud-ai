@@ -22,7 +22,7 @@ export default function Settings() {
 
     useEffect(() => {
         getCV()
-            .then(res => setCvUrl(`http://localhost:8000${res.data.cv_url}`))
+            .then(res => setCvUrl(`${import.meta.env.VITE_BASE_URL}${res.data.cv_url}`))
             .catch(() => setCvUrl(null))  // no CV yet, show upload zone
         getRecordsCount()
             .then(res => setCount(res.data))
@@ -33,6 +33,7 @@ export default function Settings() {
         
         setLoading(true)
         setMessage(null)
+        
         try {
             const res = await ingestDocument(file)
             if(res.data.message){
@@ -55,8 +56,9 @@ export default function Settings() {
         setCvLoading(true)
         try {
             const res = await ingestCV(file)
+            
 
-            setCvUrl(`http://localhost:8000${res.data.cv_url}`)
+            setCvUrl(`${import.meta.env.VITE_BASE_URL}${res.data.cv_url}`)
         } catch (err) {
             console.error(err)
             alert('CV upload failed')
@@ -92,7 +94,7 @@ export default function Settings() {
 
     return (
         <div className="text-white p-6 max-w-6xl mx-auto">
-
+            
             <h1 className="text-2xl font-bold mb-1">Settings</h1>
             <p className="text-[#A0A0A0] text-sm mb-6">
                 Manage your knowledge base and CV.
