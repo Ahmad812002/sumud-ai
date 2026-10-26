@@ -303,7 +303,7 @@ This project is licensed under the MIT License — see the [LICENSE](LICENSE) fi
 
 <div align="center">
 
-**PS Free Palestine**
+🇵🇸 **Free Palestine** 
 
 *Sumud — صمود — steadfastness*
 
