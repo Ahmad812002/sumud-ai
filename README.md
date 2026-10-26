@@ -301,10 +301,9 @@ This project is licensed under the MIT License — see the [LICENSE](LICENSE) fi
 
 ---
 
-<div align="center">
-
-🇵🇸 **Free Palestine** 
-
-*Sumud — صمود — steadfastness*
-
+<div align="center"> 
+  🇵🇸 **Free Palestine** 
+  <br>
+  *Sumud — صمود — steadfastness* 
 </div>
+
