@@ -1,6 +1,6 @@
 <div align="center">
 
-# سُمود | Sumud AI
+# صُمود | Sumud AI
 
 ### *Be Sumud in your life.*
 
