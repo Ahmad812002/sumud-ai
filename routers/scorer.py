@@ -25,7 +25,7 @@ def scorer_endpoint(request: ScoreRequest):
     try:
         # now it gets directly from database, the UI should ask for them if there is nothing stored
         preferences = get_preferences_collection().get()["documents"]
-        print("inside scorer endpoint")
+        
         result = run_scorer(request.job_description.strip(), preferences)
         return result
     except ValueError as e:
