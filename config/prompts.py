@@ -1,6 +1,9 @@
 
 
 #Handleing prompt for chat_bot mode
+
+
+
 def chat_bot_prompt(chunks):
     system = ''
     print(chunks)
@@ -53,6 +56,7 @@ def job_scorer_prompt(chunks, preferences):
             "reasoning": "<string>"
         }}
         Rules:
+        - Answer depend on the language of the user that he used.
         - Only list a skill as a match if it is explicitly present in the candidate profile. 
         - Do not infer related or adjacent skills.
         - If there is no answer or the input is not job description or you can't handle the input just answer with this respond:
@@ -62,81 +66,39 @@ def job_scorer_prompt(chunks, preferences):
     return ({"role": "system", "content": system_content})
 
 # Handling cover letter prompt
-def cover_letter_prompt(profile_candidate, fit_category, matching_points, gaps, reasoning):
+def cover_letter_prompt(profile_candidate, fit_category, matching_points, gaps, reasoning, language):
+    
+    scorer_context = ""
+    if matching_points and gaps and reasoning:
+        scorer_context = f"""
+                            Job scorer results:
+                            - Fit category: {fit_category}
+                            - Matching points: {matching_points}
+                            - Gaps: {gaps}
+                            - Reasoning: {reasoning}
+                        """
 
-    if(matching_points is None or gaps is None or reasoning is None):
-        system = system = f"""
-                You are a cover letter generator.
-        
-                {{
-                    You will receive profile user: {profile_candidate}, 
-                }}
-        
-                All these instructions must be followed by user's profile and job description to generate a cover letter:
-                - opening: Introduce who the user is, what position he is applying for, and why genuinely interested
-                - middle: Use the profile candidate to explain what the user brings to this role
-                - gap: Use some gaps that the user's profile does not has to show honest acknowledgment and growth mindset
-                - closing: write a confident call to action
-        
-                Respond only with this JSON structure filled with the actual cover letter paragraphs:
-                {{
-                    "opening": "<paragraph>",
-                    "middle": "<paragraph>",
-                    "gap": "<paragraph>",
-                    "closing": "<paragraph>"
-                }}
-        
-                Rules:
-                - Critical: Only mention skills, technologies, and tools that are explicitly listed in the profile candidate. Never infer, assume, or add adjacent technologies even if they are commonly associated with a listed skill.
-                - Do not start with generic phrases like "I am writing to apply for"
-                - Start the opening with something specific about the user or the role
-                - Each paragraph should be 3 to 6 sentences maximum. 
-                - Tone structure: professional, confident, and honest tone
-                - If you don't have enough information how the user solving the gaps, 
-                    just write a willing to learn and mention a project that the user has already worked on depend on his profile, 
-                    make sure the project details are worked on by the user.
-            """
-        
-        return ({"role": "system", "content": system})
-    else:
-        system = f"""
-            You are a cover letter generator.
+    system = f"""You are a cover letter generator. Write entirely in {language}. Do not mix languages.
 
-            {{
-                You will receive profile user: {profile_candidate}.
-                These information are about job scorer results:
-                fit category: {fit_category},
-                matching points: {matching_points}, 
-                gaps: {gaps}, 
-                reasoning: {reasoning}
-            }}
+    Candidate profile: {profile_candidate}
+    {scorer_context}
 
-            Instructions:
-            - opening: Introduce who the user is, what position they are applying for, and why genuinely interested
-            - middle: Use the matching points to explain what the user brings to this role
-            - gap: Use the gaps to show honest acknowledgment and growth mindset
-            - closing: Use the reasoning to write a confident call to action
+    Generate a cover letter with this exact JSON structure:
+    {{
+        "opening": "<paragraph>",
+        "middle": "<paragraph>",
+        "gap": "<paragraph>",
+        "closing": "<paragraph>"
+    }}
 
-            Respond only with this JSON structure filled with the actual cover letter paragraphs:
-            {{
-                "opening": "<paragraph>",
-                "middle": "<paragraph>",
-                "gap": "<paragraph>",
-                "closing": "<paragraph>"
-            }}
+    Rules:
+        - opening: who the user is, position, why interested
+        - middle: matching points or profile strengths for this role
+        - gap: honest acknowledgment of gaps with growth mindset
+        - closing: confident call to action
+        - Only mention skills explicitly in the profile. Never infer adjacent technologies.
+        - Professional, confident, honest tone.
+    """
 
-            Rules:
-            - Critical: Only mention skills, technologies, and tools that are explicitly listed in the profile candidate. Never infer, assume, or add adjacent technologies even if they are commonly associated with a listed skill.
-            - Do not start with generic phrases like "I am writing to apply for"
-            - Start the opening with something specific about the user or the role
-            - The total cover letter must not exceed 500 words.
-            - Each paragraph should be 3 to 6 sentences maximum. 
-            - Tone structure: professional, confident, and honest tone
-            - If you don't have enough information how the user solving the gaps, 
-                just write a willing to learn and mention a project that the user has already worked on, 
-                make sure the project details are worked on by the user and is not mentioned in the above cover letter.
-            """
-
-        return ({"role": "system", "content": system})
-
+    return {"role": "system", "content": system}
 
