@@ -10,3 +10,4 @@ numpy
 python-docx
 requests
 pypdf
+jspdf
