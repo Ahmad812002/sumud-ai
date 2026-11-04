@@ -66,7 +66,7 @@ def job_scorer_prompt(chunks, preferences):
     return ({"role": "system", "content": system_content})
 
 # Handling cover letter prompt
-def cover_letter_prompt(profile_candidate, fit_category, matching_points, gaps, reasoning, language):
+def cover_letter_prompt(profile_candidate, fit_category, matching_points, gaps, reasoning):
     
     scorer_context = ""
     if matching_points and gaps and reasoning:
@@ -78,10 +78,16 @@ def cover_letter_prompt(profile_candidate, fit_category, matching_points, gaps, 
                             - Reasoning: {reasoning}
                         """
 
-    system = f"""You are a cover letter generator. Write entirely in {language}. Do not mix languages.
+    system = f"""You are a cover letter generator.
 
     Candidate profile: {profile_candidate}
     {scorer_context}
+
+    All these instructions must be followed by user's profile and job description to generate a cover letter:
+        - opening: Introduce who the user is, what position he is applying for, and why genuinely interested
+        - middle: Use the profile candidate to explain what the user brings to this role
+        - gap: Use some gaps that the user's profile does not has to show honest acknowledgment and growth mindset
+        - closing: write a confident call to action
 
     Generate a cover letter with this exact JSON structure:
     {{
@@ -92,13 +98,62 @@ def cover_letter_prompt(profile_candidate, fit_category, matching_points, gaps, 
     }}
 
     Rules:
-        - opening: who the user is, position, why interested
-        - middle: matching points or profile strengths for this role
-        - gap: honest acknowledgment of gaps with growth mindset
-        - closing: confident call to action
-        - Only mention skills explicitly in the profile. Never infer adjacent technologies.
-        - Professional, confident, honest tone.
+        - Critical: Only mention skills, technologies, and tools that are explicitly listed in the profile candidate. 
+        - Never infer, assume, or add adjacent technologies even if they are commonly associated with a listed skill.
+        - Do not start with generic phrases like "I am writing to apply for"
+        - Start the opening with something specific about the user or the role
+        - The total cover letter must not exceed 250–400 words.
+        - Each paragraph should be 3 to 6 sentences maximum. 
+        - Tone structure: professional, confident, and honest tone
+        - If you don't have enough information how the user solving the gaps, 
+            just write a willing to learn and mention a project that the user has already worked on, 
+            make sure the project details are worked on by the user and is not mentioned in the above cover letter.
     """
 
     return {"role": "system", "content": system}
 
+# German cover letter standards
+def german_cover_letter_prompt(profile_candidate, fit_category, matching_points, gaps, reasoning):
+    
+    scorer_context = ""
+    if matching_points and gaps and reasoning:
+        scorer_context = f"""
+                            Job scorer results:
+                            - Fit category: {fit_category}
+                            - Matching points: {matching_points}
+                            - Gaps: {gaps}
+                            - Reasoning: {reasoning}
+                        """
+
+    system = f"""You are a cover letter generator in German standards.
+
+    Candidate profile: {profile_candidate}
+    {scorer_context}
+
+    All these instructions must be followed by user's profile and job description to generate a cover letter:
+        - opening:  state the position the user is applying for, capture attention immediately, and briefly highlight why you are motivated.
+        - middle: connect user's past experience, hard skills, and concrete quantifiable achievements directly to the core requirements of the role.
+        - company_interest: explain why you want to work for this specific company, mentioning their values, culture, or projects.
+        - closing: reiterate your enthusiasm, state your earliest availability/start date, mention salary expectations only if requested in the ad, and express eagerness for an interview.
+
+    return this exact JSON structure:
+    {{
+        "opening": "<paragraph>",
+        "middle": "<paragraph>",
+        "company_interest": "<paragraph>",
+        "closing": "<paragraph>"
+    }}
+
+    Rules:
+        - Critical: Only mention skills, technologies, and tools that are explicitly listed in the profile candidate. 
+        - Never infer, assume, or add adjacent technologies even if they are commonly associated with a listed skill.
+        - Avoid cliché openers like "I am writing to apply for..."
+        - Start the opening with something specific about the user or the role.
+        - The total cover letter must not exceed 250–400 words.
+        - Each paragraph should be 3 to 6 sentences maximum. 
+        - Tone structure: professional, confident, and honest tone.
+        - Make sure projects details are worked on by the user are mentioned.
+        - End the cover letter with Mit freundlichen Grüßen
+    """
+
+    return {"role": "system", "content": system}
