@@ -7,6 +7,7 @@ import json
 
 def run_scorer(job_description: str, job_preferences: str):
     try:
+        # next plan (using the name of the user after adding Authentication and multi-user support)
         # validate
         if len(job_description.strip()) < 50:
             raise HTTPException(status_code=400, detail="Job description too short")
@@ -45,9 +46,11 @@ def run_scorer(job_description: str, job_preferences: str):
 def process_job_description(job_description):
     try:
         job_embedding = get_embedding(job_description)
-        profile_chunks = search_embedding(job_embedding, 15)
+        profile_chunks = search_embedding(job_embedding, 8)
         if profile_chunks:
+            print(profile_chunks)
             return "\n".join([chunk['documents'] for chunk in profile_chunks])
+       
         return None
     except Exception as e:
         raise ValueError(status_code=500, detail=f"Error occurred while processing job description: {str(e)}")

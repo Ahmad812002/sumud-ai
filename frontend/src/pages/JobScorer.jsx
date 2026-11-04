@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { scoreJob, generateCoverLetter } from '../services/api'
 import { Spinner } from './Spinner'
+import { generateCoverLetterPDF } from '../utils/generatePDF.js'
 
 
 // Score circle component
@@ -34,6 +35,7 @@ export default function JobScorer() {
             setCoverLetter(null)
             const res = await scoreJob(jobDescription)
             setScorerResult(res.data)
+            console.log(res.data)
         } catch (err) {
             console.error(err)
             alert('Scoring failed. Make sure the backend is running.')
@@ -45,6 +47,7 @@ export default function JobScorer() {
     const handleGenerateCoverLetter = async () => {
         try {
             setLoadingCover(true)
+            console.log(scorerResult)
             const res = await generateCoverLetter(jobDescription,
                 scorerResult.fit_category,
                 scorerResult.matching_points, 
@@ -181,8 +184,8 @@ export default function JobScorer() {
                             Copy to Clipboard
                         </button>
                         <button
+                            onClick={() => generateCoverLetterPDF(coverLetter, jobDescription)}
                             className="flex-1 bg-[#C8102E] hover:bg-red-700 text-white py-2.5 rounded-lg text-sm transition-colors"
-                            onClick={() => alert('PDF download coming soon!')}
                         >
                             Download PDF
                         </button>

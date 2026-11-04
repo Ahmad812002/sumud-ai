@@ -21,7 +21,7 @@ def generate_cover_letter(request: CoverLetterRequest):
         job_preferences = get_preferences_collection().get()["documents"]
         # scorer_result = run_scorer(request.job_description.strip(), job_preferences)
         # profile_chunks = process_job_description(request.job_description)
-
+        print("request: ", request)
         generated_cover_letter = run_cover_letter(request.profile_chunks,
                                                 request.job_description,
                                                 request.fit_category,
