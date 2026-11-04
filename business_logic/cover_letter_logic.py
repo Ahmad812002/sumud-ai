@@ -1,19 +1,31 @@
 import json
-from config.prompts import cover_letter_prompt
+from config.prompts import cover_letter_prompt, german_cover_letter_prompt
 from .llm import llm_cover_letter
 
 def run_cover_letter(profile_chunks, job_description, fit_category, matching_points =[], gaps =[], reasoning = ""):
     try:
         language = detect_language(job_description)
         print(language)
-        formated_prompt = cover_letter_prompt(
-            profile_chunks, 
-            fit_category,
-            matching_points,
-            gaps,
-            reasoning,
-            language
-        )
+        print("profile chunks: ", profile_chunks)
+        
+
+        if(language == "German"):
+            formated_prompt = german_cover_letter_prompt(
+                        profile_chunks, 
+                        fit_category,
+                        matching_points,
+                        gaps,
+                        reasoning
+                    )
+        else:
+            formated_prompt = cover_letter_prompt(
+                        profile_chunks, 
+                        fit_category,
+                        matching_points,
+                        gaps,
+                        reasoning
+                    )
+
         cover_letter_response = llm_cover_letter(formated_prompt, job_description)
         # sometimes it returned as lazy object 
         cover_letter_formated_response = format_cover_letter_json(str(cover_letter_response))
