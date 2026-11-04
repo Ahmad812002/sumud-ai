@@ -1,5 +1,4 @@
 import docx
-from pypdf import PdfReader
 from fastapi import HTTPException
 from fastapi.responses import JSONResponse
 from data_access.embeddings import chunk_text, store_embedding, get_embedding
