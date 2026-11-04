@@ -38,6 +38,9 @@ def llm_scorer(prompt, job_description):
         raise ValueError(f"Authentication Error: {str(e)}")
 
     if response.choices[0].finish_reason == "length":
+        print(f"Prompt tokens: {response.usage.prompt_tokens}")
+        print(f"Completion tokens:{response.usage.completion_tokens}")
+        print(f"Total tokens: {response.usage.total_tokens}")
         return {"error": "Response was cut off. Please try a shorter question."}
 
     reply = response.choices[0].message.content
@@ -45,17 +48,22 @@ def llm_scorer(prompt, job_description):
     if reply is None:
         return {"error": "Could not generate a response. Please try again."}
 
+    print("usage: ", response.usage)
+
+
     return response.choices[0].message.content
 
 # LLM function to generate a cover letter based
 def llm_cover_letter(prompt, job_description):
     messages_arr = [prompt]
+
+    print(messages_arr)
     messages_arr.append({"role": "user", "content": f"Please evaluate this job description for building the coverletter: {job_description}"})
     try:
         response = client.chat.completions.create(
             model="gemini-3.5-flash-lite",
             messages= messages_arr[-2:],
-            max_tokens=2048,
+            max_tokens=4092,
             response_format={"type": "json_object"},
             reasoning_effort="high",
             temperature=1
@@ -79,9 +87,13 @@ def llm_cover_letter(prompt, job_description):
     messages_arr.append({"role": "assistant", "content": response.choices[0].message.content})
 
     if response.choices[0].finish_reason == "length":
+        print(f"Prompt tokens: {response.usage.prompt_tokens}")
+        print(f"Completion tokens:{response.usage.completion_tokens}")
+        print(f"Total tokens used: {response.usage.total_tokens}")
         return {"error": "Response was cut off. Please try a shorter question."}
 
     reply = response.choices[0].message.content
+    print("usage: ", response.usage)
     if reply is None:
         return {"error": "Could not generate a response. Please try again."}
 
