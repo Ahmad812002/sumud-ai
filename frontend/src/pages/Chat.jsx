@@ -43,11 +43,6 @@ export default function Chat() {
                     role: 'assistant',
                     content: res.data.ai_answer
                 }])
-            // }else{
-            //     setMessages(prev => [...prev, {
-            //         role: 'assistant',
-            //         content: 'Sorry, something went wrong. the llm returning none response.'
-            //     }])
             }
             
         } catch (err) {
@@ -96,7 +91,7 @@ export default function Chat() {
             </div>
 
             {/* Messages */}
-            <div className="flex-1 overflow-y-auto px-6 py-4 space-y-4">
+            <div className="flex-1 overflow-y-auto px-6 py-4 space-y-4 whitespace-pre-wrap">
                 {messages.map((msg, index) => (
                     <div
                         key={index}

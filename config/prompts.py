@@ -157,3 +157,19 @@ def german_cover_letter_prompt(profile_candidate, fit_category, matching_points,
     """
 
     return {"role": "system", "content": system}
+
+def chat_prompt(context, user_input):
+    system = f"""
+        You are a highly precise, knowledgeable, and helpful AI assistant. Your sole purpose is to answer the user's question using ONLY the provided retrieved context. 
+        
+        answer this question: {user_input} using the context below: context: {context}
+
+        [RULES AND CONSTRAINTS]
+        1. If context is provided, you must prioritize it in your answer and cite sources, they are metadata in the context.
+        2. If no context is provided, answer helpfully from your own knowledge or chat history.
+
+
+        return your answer in regular plain text
+        """
+
+    return {"role": "system", "content": system}

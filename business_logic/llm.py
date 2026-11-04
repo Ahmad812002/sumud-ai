@@ -1,6 +1,6 @@
 from config.client import initialize_client
 import openai   
-from config.prompts import chat_bot_prompt
+from config.prompts import chat_bot_prompt, chat_prompt
 from business_logic.chat_logic import get_embedding, get_embedding_result
 
 
@@ -100,19 +100,9 @@ def llm_cover_letter(prompt, job_description):
     return response.choices[0].message.content
 
 # LLM function to generate chat_bot
-def llm_chat(message):
-    chunks = ""
+def llm_chat(prompt, message):
     try:
-        #Data preperation
-
-        embedded_vector = get_embedding(message)
-        vector_embedding_result = get_embedding_result(embedded_vector, 8)
-
-        if vector_embedding_result is not None:
-            chunks = "\n".join([chunk['documents'] for chunk in vector_embedding_result])
-
-
-        messages_arr = [chat_bot_prompt(chunks)]
+        messages_arr = [prompt]
         messages_arr.append({"role": "user", "content": message})
         #LLM part
         response = client.chat.completions.create(
@@ -144,8 +134,7 @@ def llm_chat(message):
     if response.choices[0].finish_reason == "length":
         return {"ai_answer": "Response was cut off. Please try a shorter question."}
 
-    reply = response.choices[0].message.content
-    if reply is None:
+    if response.choices[0].message.content is None:
         return {"ai_answer": "Could not generate a response. Please try again."}
 
-    return {"ai_answer": reply}
+    return response.choices[0].message.content

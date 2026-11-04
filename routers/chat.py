@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 from fastapi import APIRouter, HTTPException
 from config.client import initialize_client
-from business_logic.llm import llm_chat
+from business_logic.chat_logic import process_chat
 
 # Initialize the OpenAI client with the API key and base URL for OpenRouter.
 client = initialize_client()
@@ -16,9 +16,8 @@ class ChatRequest(BaseModel):
 @router.post("/chat")
 def chat_bot(request: ChatRequest):
     try:
-        reply = llm_chat(request.message)
-        if reply is None: 
-            reply = { "ai_answer": "I found relevant information but couldn't generate a response. Please try again." }
+
+        reply = process_chat(request.message)
         return reply
     except ValueError as e:
         print(e)
