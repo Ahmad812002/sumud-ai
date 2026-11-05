@@ -45,7 +45,9 @@ app.include_router(cover_letter.router, prefix="/api/v1", tags=["cover-letter"])
 app.include_router(preferences.router, prefix="/api/v1", tags=["preferences"])
 app.include_router(documents.router, prefix="/api/v1", tags=["documents"])
 
-
+# for fresh launching, ensure the cv directory and knowledge_base directory exist for ingesting documents and uploading cv
+os.makedirs("knowledge_base/cv", exist_ok=True)
+os.makedirs("knowledge_base", exist_ok=True)
 
 if __name__ == "__main__":
     main()
