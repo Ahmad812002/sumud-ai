@@ -53,30 +53,30 @@ def job_scorer_prompt(chunks, preferences):
             "fit_category": "<string>",
             "matching_points": ["<string>"],
             "gaps": ["<string>"],
+            "soft_skills": ["<string>"],
             "reasoning": "<string>"
         }}
         Rules:
         - Answer depend on the language of the user that he used.
         - Only list a skill as a match if it is explicitly present in the candidate profile. 
         - Do not infer related or adjacent skills.
-        - If there is no answer or the input is not job description or you can't handle the input just answer with this respond:
-            Sorry! there is no job description please enter a valid one or i couldn't answer you.
         """
     # Here we are returning the system message which will be used as the first message in the conversation, it will set the tone and the context for the rest of the conversation, it will also help the model to understand the user's role and how to respond accordingly.
     return ({"role": "system", "content": system_content})
 
 # Handling cover letter prompt
-def cover_letter_prompt(profile_candidate, fit_category, matching_points, gaps, reasoning):
+def cover_letter_prompt(profile_candidate, fit_category, matching_points, soft_skills, reasoning):
     
     scorer_context = ""
-    if matching_points and gaps and reasoning:
+    if matching_points and soft_skills and reasoning:
         scorer_context = f"""
                             Job scorer results:
                             - Fit category: {fit_category}
                             - Matching points: {matching_points}
-                            - Gaps: {gaps}
+                            - Soft Skills: {soft_skills}
                             - Reasoning: {reasoning}
                         """
+    else: return {"role": "system", "content": "Sorry! there is missing parts in the job scorer results, please make sure to provide all the required information."}
 
     system = f"""You are a cover letter generator.
 
@@ -85,15 +85,15 @@ def cover_letter_prompt(profile_candidate, fit_category, matching_points, gaps, 
 
     All these instructions must be followed by user's profile and job description to generate a cover letter:
         - opening: Introduce who the user is, what position he is applying for, and why genuinely interested
-        - middle: Use the profile candidate to explain what the user brings to this role
-        - gap: Use some gaps that the user's profile does not has to show honest acknowledgment and growth mindset
-        - closing: write a confident call to action
+        - middle: Use the profile candidate to explain what the user brings to this role, pick 2 to 3 core requirements from the job posting and match them with concrete examples, measurable achievements, or relevant tools that the user has.
+        - soft_skills: Highlight relevant soft skills that align with the job requirements
+        - closing: write a confident call to action and mention an exact timeframe if the user context has it.
 
-    Generate a cover letter with this exact JSON structure:
+    Generate a cover letter with this exact JSON structure using Arial font, size 12:
     {{
         "opening": "<paragraph>",
         "middle": "<paragraph>",
-        "gap": "<paragraph>",
+        "soft_skills": "<paragraph>",
         "closing": "<paragraph>"
     }}
 
@@ -104,10 +104,7 @@ def cover_letter_prompt(profile_candidate, fit_category, matching_points, gaps, 
         - Start the opening with something specific about the user or the role
         - The total cover letter must not exceed 250–400 words.
         - Each paragraph should be 3 to 6 sentences maximum. 
-        - Tone structure: professional, confident, and honest tone
-        - If you don't have enough information how the user solving the gaps, 
-            just write a willing to learn and mention a project that the user has already worked on, 
-            make sure the project details are worked on by the user and is not mentioned in the above cover letter.
+        - Mention projects details ensure they are worked on by the user.
     """
 
     return {"role": "system", "content": system}

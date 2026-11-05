@@ -36,3 +36,4 @@ def get_embedding_result(embedded_vector, n_results):
         return data_access.embeddings.search_embedding(embedded_vector, n_results)
     except Exception as e:
         raise ValueError(f"Error occurred while searching embedding: {str(e)}")
+    

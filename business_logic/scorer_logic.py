@@ -33,9 +33,9 @@ def run_scorer(job_description: str, job_preferences: str):
             "fit_category": parsed['fit_category'],
             "matching_points": parsed['matching_points'],
             "gaps": parsed['gaps'],
-            "job_description": job_description,
+            "soft_skills": parsed['soft_skills'],
             "reasoning": parsed['reasoning'],
-            "profile_chunks": profile_chunks,
+            "profile_chunks": profile_chunks
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Server Error occurred while running scorer: {str(e)}")
@@ -65,6 +65,7 @@ def format_scorer_result_json(ai_reply):
             "fit_category": result['fit_category'],
             "matching_points": result['matching_points'],
             "gaps": result['gaps'],
+            "soft_skills": result['soft_skills'],
             "reasoning": result['reasoning']
         }
     except json.JSONDecodeError:

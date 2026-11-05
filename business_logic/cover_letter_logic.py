@@ -2,19 +2,16 @@ import json
 from config.prompts import cover_letter_prompt, german_cover_letter_prompt
 from .llm import llm_cover_letter
 
-def run_cover_letter(profile_chunks, job_description, fit_category, matching_points =[], gaps =[], reasoning = ""):
+def run_cover_letter(profile_chunks, job_description, fit_category, matching_points =[], soft_skills =[], reasoning = ""):
     try:
         language = detect_language(job_description)
-        print(language)
-        print("profile chunks: ", profile_chunks)
-        
 
         if(language == "German"):
             formated_prompt = german_cover_letter_prompt(
                         profile_chunks, 
                         fit_category,
                         matching_points,
-                        gaps,
+                        soft_skills,
                         reasoning
                     )
         else:
@@ -22,7 +19,7 @@ def run_cover_letter(profile_chunks, job_description, fit_category, matching_poi
                         profile_chunks, 
                         fit_category,
                         matching_points,
-                        gaps,
+                        soft_skills,
                         reasoning
                     )
 
@@ -34,7 +31,7 @@ def run_cover_letter(profile_chunks, job_description, fit_category, matching_poi
             return {
                         "opening": cover_letter_formated_response['opening'],
                         "middle": cover_letter_formated_response['middle'],
-                        "gap": cover_letter_formated_response['gap'],
+                        "soft_skills": cover_letter_formated_response['soft_skills'],
                         "closing": cover_letter_formated_response['closing']
                     }
     except Exception as e:
@@ -59,7 +56,7 @@ def format_cover_letter_json(ai_reply):
         return {
             "opening": result['opening'],
             "middle": result['middle'],
-            "gap": result['gap'],
+            "soft_skills": result['soft_skills'],
             "closing": result['closing']
         }
     except json.JSONDecodeError:

@@ -12,13 +12,13 @@ const api = axios.create({
 export const scoreJob = (job_description) => {
     return api.post('/scorer', { job_description })
 }
-export const generateCoverLetter = (job_description, fitCategory, matchingPoints, gaps, profileChunks, reasoning) => {
+export const generateCoverLetter = (job_description, fitCategory, matchingPoints, softSkills, profileChunks, reasoning) => {
     return api.post('/cover_letter', { 
         job_description,
         fit_category: fitCategory,
         matching_points: matchingPoints,
+        soft_skills: softSkills,
         profile_chunks: profileChunks,
-        gaps,
         reasoning
     })
 }

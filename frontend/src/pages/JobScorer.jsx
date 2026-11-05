@@ -47,19 +47,20 @@ export default function JobScorer() {
     const handleGenerateCoverLetter = async () => {
         try {
             setLoadingCover(true)
-            console.log(scorerResult)
+
             const res = await generateCoverLetter(jobDescription,
                 scorerResult.fit_category,
                 scorerResult.matching_points, 
-                scorerResult.gaps,
+                scorerResult.soft_skills,
                 scorerResult.profile_chunks,
                 scorerResult.reasoning
             )
+            
             const letter = res.data
             
             setCoverLetter(letter)
             setEditableLetter(
-                `${letter.opening}\n\n${letter.middle}\n\n${letter.gap}\n\n${letter.closing}`
+                `${letter.opening}\n\n${letter.middle}\n\n${letter.soft_skills}\n\n${letter.closing}`
             )
         } catch (err) {
             console.error(err)
