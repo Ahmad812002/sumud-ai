@@ -36,10 +36,3 @@ def get_embedding_result(embedded_vector, n_results):
         return data_access.embeddings.search_embedding(embedded_vector, n_results)
     except Exception as e:
         raise ValueError(f"Error occurred while searching embedding: {str(e)}")
-
-# This function is to format the response from the LLM to JSON, it will take the response as input and return the formatted JSON.
-def format_chat_response_json(response):
-    response = json.loads(response)
-    if response is not None:
-        return response
-    return ""
