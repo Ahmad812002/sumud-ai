@@ -1,7 +1,7 @@
 from pydantic import BaseModel 
 from fastapi import APIRouter, File, HTTPException, UploadFile
 from data_access.document_reader import add_embedding
-from data_access.db import get_embeddings_collection, get_records, get_profile_collection
+from data_access.db import get_embeddings_collection, get_records
 import os, shutil, asyncio
 
 
@@ -28,9 +28,13 @@ def get_documents_count():
 @router.post("/upload_cv")
 def upload_cv(file: UploadFile = File(...)):
     try:
+        # for fresh launching, ensure the cv directory exists
+        os.makedirs("knowledge_base/cv", exist_ok=True)
+        # save the uploaded file to the cv directory
         file_location = os.path.join("knowledge_base/cv", file.filename)
         with open(file_location, "wb") as buffer:
             shutil.copyfileobj(file.file, buffer)
+        # return the file name and the URL to access the uploaded CV
         return {"file_name": file.filename, "cv_url": f"/cv/{file.filename}"}
     except HTTPException as e:
         raise e
