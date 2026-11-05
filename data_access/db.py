@@ -8,8 +8,8 @@ def get_chroma_client():
     # _client = chromadb.PersistentClient(path="C:/Users/96279/OneDrive/Desktop/Ahmad-proj/sumud-ai/data_access/")
     if _client is None:
         _client = chromadb.CloudClient(
-            tenant='f4693080-0a9c-4c15-b7b0-8596835296b3',
-            database='ahmad_database',
+            tenant=os.getenv('CHROMA_TENANT'),
+            database=os.getenv('CHROMA_DATABASE'),
             api_key=os.getenv('CHROMA_API_KEY')
         )
     return _client
