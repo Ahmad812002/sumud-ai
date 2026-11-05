@@ -6,7 +6,7 @@ _client = None
 def get_chroma_client():
     global _client
     if _client is None:
-        if(os.get_env('CHROMA_TENANT') is None or os.getenv('CHROMA_DATABASE') is None or os.getenv('CHROMA_API_KEY') is None):
+        if(os.getenv('CHROMA_TENANT') is None or os.getenv('CHROMA_DATABASE') is None or os.getenv('CHROMA_API_KEY') is None):
                 print("ChromaDB environment variables are not set. Please set CHROMA_TENANT, CHROMA_DATABASE, and CHROMA_API_KEY in the .env file.")
                 raise RuntimeError("ChromaDB environment variables are not set. Please set CHROMA_TENANT, CHROMA_DATABASE, and CHROMA_API_KEY in the .env file.")   
         _client = chromadb.CloudClient(
