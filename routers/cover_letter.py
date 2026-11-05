@@ -1,9 +1,6 @@
 from pydantic import BaseModel 
 from business_logic.cover_letter_logic import run_cover_letter
 from fastapi import APIRouter, HTTPException
-from business_logic.scorer_logic import process_job_description, run_scorer
-from data_access.db import get_preferences_collection
-import routers.scorer as scorer_router
 
 router = APIRouter()
 
