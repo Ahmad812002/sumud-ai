@@ -264,7 +264,6 @@ Ask anything about your career — the assistant answers from your stored docume
 
 ### Roadmap
 - [ ] Fix ChromaDB async conflict
-- [ ] PDF cover letter download
 - [ ] Authentication and multi-user support
 - [ ] Cloud deployment with live demo URL
 - [ ] Mobile responsive improvements
