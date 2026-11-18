@@ -32,7 +32,20 @@ def get_embeddings_collection():
 
 def get_records():
     try:
-        return get_embeddings_collection().get()
-    except Exception as e:  
+        collection = get_embeddings_collection().get()
+        if(collection is None or 'ids' not in collection or len(collection['ids']) == 0):
+            return {"message": "No documents found."}
+        return collection
+    except Exception as e: 
+        print("error:", e)
         raise RuntimeError(f"Failed to get documents: {str(e)}")
 
+# Remove every chunk that belongs to one file.
+def delete_chunks_by_fingerprint(fingerprint):
+    get_embeddings_collection().delete(where={"fingerprint": fingerprint})
+
+# Remove chunks of every CV except the one just stored.
+def delete_old_cv_chunks(keep_fingerprint):
+    get_embeddings_collection().delete(
+        where={"$and": [{"type": "cv"}, {"fingerprint": {"$ne": keep_fingerprint}}]}
+    )
