@@ -1,5 +1,5 @@
 from fastapi import HTTPException
-from fastapi.responses import JSONResponse
+from fastapi.responses import Response
 from nomic import embed
 import numpy as np
 from dotenv import load_dotenv
@@ -34,16 +34,16 @@ def get_embedding(text):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error occurred while generating embedding: {e}")
 # This function is to store the embedding in ChromaDB, it will take the document id, text and embedding vector as input and store it in the collection.
-def store_embedding(doc_id, text, embedding, source):
+def store_embedding(doc_id, text, embedding, source, fingerprint, _type):
     
     try:
         get_embeddings_collection().add(
             ids = [doc_id],
             documents = [text],
             embeddings = [embedding],
-            metadatas = [{"source": source}]
+            metadatas = [{ "source": source, "fingerprint": fingerprint, "type": _type }]    
         )
-        return JSONResponse(status_code=201, content={"message": "Document ingested successfully!"})
+        return Response(status_code=201)
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error occurred while storing embedding: {str(e)}")
 # This function is to search the embedding in ChromaDB, it will take the query vector as input and return the top 3 closest documents.
