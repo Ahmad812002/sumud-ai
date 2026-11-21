@@ -71,16 +71,17 @@ export default function JobScorer() {
     }
 
     return (
-        <div className="text-white p-6 max-w-6xl mx-auto overflow-y-auto translate-y-0">
-
-            {/* Header */}
-            <h1 className="text-2xl font-bold mb-1">Job Scorer</h1>
-            <p className="text-[#A0A0A0] text-sm mb-6">
-                Paste a job description to see how well it matches your profile.
-            </p>
+        <div className="page-inner">
+            <div className="page-heading">
+                <div>
+                    <div className="eyebrow">Opportunity analysis</div>
+                    <h1 className="page-title">Job Scorer</h1>
+                    <p className="page-subtitle">Paste a job description to measure the signal between the role and your profile.</p>
+                </div>
+            </div>
 
             {/* Input Section */}
-            <div className="bg-[#2A2A2A] rounded-xl p-6 border border-[#2E2E2E] mb-6 h-auto">
+            <div className="field-panel panel mb-6 h-auto">
                 <textarea
                     className="w-full h-60 bg-[#1A1A1A] text-white border border-[#2E2E2E] rounded-lg p-4 text-sm resize-none focus:outline-none focus:border-[#C8102E] transition-colors"
                     rows={6}

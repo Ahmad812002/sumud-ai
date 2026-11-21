@@ -12,36 +12,31 @@ export default function Sidebar() {
   const location = useLocation()
 
   return (
-    <div className="w-64 h-full bg-gray-900 border-r border-gray-800 flex flex-col p-4">
-      
-      {/* Logo */}
-      <div className="mb-8 px-2">
-        <h1 className="text-xl font-bold text-white">Sumud AI</h1>
-        <p className="text-xs text-[#A0A0A0]">Your career, your resilience.</p>
-      </div>
-
-      {/* Navigation */}
-      <nav className="flex flex-col gap-1">
+    <aside className="sidebar">
+      <Link className="brand" to="/">
+        <div className="brand-copy">
+          <span className="brand-name">SUMUD AI</span>
+          <span className="brand-tag">Career / 001</span>
+        </div>
+      </Link>
+      <p className="nav-label">Workspace</p>
+      <nav className="nav-stack">
         {navItems.map((item) => {
           const Icon = item.icon
           const isActive = location.pathname === item.path
-
           return (
             <Link
               key={item.path}
               to={item.path}
-              className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors
-                ${isActive 
-                  ? 'bg-palestine-red text-white' 
-                  : 'text-[#A0A0A0] hover:bg-palestine-red hover:text-white'
-                }`}
+              className={`nav-link ${isActive ? 'active' : ''}`}
+              title={item.label}
             >
               <Icon size={18} />
-              {item.label}
+              <span>{item.label}</span>
             </Link>
           )
         })}
       </nav>
-    </div>
+    </aside>
   )
 }

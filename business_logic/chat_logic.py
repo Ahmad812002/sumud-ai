@@ -23,6 +23,18 @@ def process_chat(message):
     
     return { "ai_answer": reply }
 
+
+def process_chat_stream(message):
+    embedded_vector = get_embedding(message)
+    vector_embedding_result = get_embedding_result(embedded_vector, 8)
+
+    chunks = ""
+    if vector_embedding_result is not None:
+        chunks = "\n".join([chunk['documents'] for chunk in vector_embedding_result])
+
+    prompt = chat_prompt(chunks, message)
+    yield from business_logic.llm.llm_chat_stream(prompt, message)
+
 # getting embedding of the message to search for relevant information in the vector database.
 def get_embedding(message):
     try:

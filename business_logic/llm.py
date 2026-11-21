@@ -138,3 +138,41 @@ def llm_chat(prompt, message):
         return {"ai_answer": "Could not generate a response. Please try again."}
 
     return response.choices[0].message.content
+
+
+def llm_chat_stream(prompt, message):
+    """Yield chat response text chunks as the model generates them."""
+    try:
+        messages_arr = [prompt, {"role": "user", "content": message}]
+        response = client.chat.completions.create(
+            model="gemini-3.5-flash-lite",
+            messages=messages_arr[-10:],
+            temperature=1.0,
+            reasoning_effort="high",
+            max_tokens=2048,
+            stream=True,
+        )
+
+        for chunk in response:
+            if not chunk.choices:
+                continue
+
+            delta = chunk.choices[0].delta
+            content = getattr(delta, "content", None)
+            if content:
+                yield content
+
+    except openai.APIError as e:
+        raise ValueError(f"API Error: {str(e)}")
+    except openai.APITimeoutError as e:
+        raise ValueError(f"Timeout Error: {str(e)}")
+    except openai.APIConnectionError as e:
+        raise ValueError(f"API Connection Error: {str(e)}")
+    except openai.BadRequestError as e:
+        raise ValueError(f"Invalid Request Error (Bad Request): {str(e)}")
+    except openai.InternalServerError as e:
+        raise ValueError(f"Internal Server Error: {str(e)}")
+    except openai.RateLimitError as e:
+        raise ValueError(f"Rate Limit Error: {str(e)}")
+    except openai.AuthenticationError as e:
+        raise ValueError(f"Authentication Error: {str(e)}")

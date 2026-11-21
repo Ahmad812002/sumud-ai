@@ -93,12 +93,14 @@ export default function Settings() {
     }
 
     return (
-        <div className="text-white p-6 max-w-6xl mx-auto">
-            
-            <h1 className="text-2xl font-bold mb-1">Settings</h1>
-            <p className="text-[#A0A0A0] text-sm mb-6">
-                Manage your knowledge base and CV.
-            </p>
+        <div className="page-inner">
+            <div className="page-heading">
+                <div>
+                    <div className="eyebrow">Workspace data</div>
+                    <h1 className="page-title">Settings</h1>
+                    <p className="page-subtitle">Manage the knowledge base and CV behind every recommendation.</p>
+                </div>
+            </div>
 
             <div className="grid grid-cols-2 gap-6">
 

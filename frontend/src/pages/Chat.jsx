@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react"
-import { chatWithAi } from "../services/api"
+import { streamChatWithAi } from "../services/api"
 
 function Spinner() {
     return (
@@ -35,23 +35,47 @@ export default function Chat() {
         setInput('')
         setLoading(true)
 
+        setMessages(prev => [...prev, { role: 'assistant', content: '' }])
+
         try {
-            const res = await chatWithAi(input)
-            console.log(res.data)
-            if(res.data.ai_answer != null){
-                setMessages(prev => [...prev, {
-                    role: 'assistant',
-                    content: res.data.ai_answer
-                }])
-            }
-            
+            await streamChatWithAi(
+                input,
+                (delta) => {
+                    setMessages(prev => {
+                        const next = [...prev]
+                        const lastIndex = next.length - 1
+                        next[lastIndex] = {
+                            ...next[lastIndex],
+                            content: next[lastIndex].content + delta,
+                        }
+                        return next
+                    })
+                },
+                () => setLoading(false),
+                (error) => {
+                    setMessages(prev => {
+                        const next = [...prev]
+                        const lastIndex = next.length - 1
+                        next[lastIndex] = {
+                            role: 'assistant',
+                            content: error || 'Sorry, streaming failed. Please try again.',
+                        }
+                        return next
+                    })
+                    setLoading(false)
+                }
+            )
         } catch (err) {
             console.error(err)
-            setMessages(prev => [...prev, {
-                role: 'assistant',
-                content: 'Sorry, something went wrong. Please try again.'
-            }])
-        } finally {
+            setMessages(prev => {
+                const next = [...prev]
+                const lastIndex = next.length - 1
+                next[lastIndex] = {
+                    role: 'assistant',
+                    content: 'Sorry, something went wrong. Please try again.',
+                }
+                return next
+            })
             setLoading(false)
         }
     }
@@ -72,15 +96,13 @@ export default function Chat() {
     }
 
     return (
-        <div className="flex flex-col min-h-full text-white">
+        <div className="flex flex-col min-h-full text-white page-inner">
 
             {/* Header */}
-             <div className="flex flex-row items-center justify-between h-full text-white overflow-hidden w-full px-3">
+             <div className="page-heading" style={{ flex: 'none', minHeight: '82px', marginBottom: '10px' }}>
                 <div>
-                    <h1 className="text-xl font-bold">Chat Assistant</h1>
-                    <p className="text-[#A0A0A0] text-xs">
-                        Ask anything about your career or job search
-                    </p>
+                    <div className="eyebrow">Career counsel</div>
+                    <h1 className="page-title" style={{ fontSize: '38px' }}>Chat Assistant</h1>
                 </div>
                 <button
                     onClick={clearHistory}
@@ -108,7 +130,7 @@ export default function Chat() {
                     </div>
                 ))}
 
-                {loading && (
+                {loading && !messages[messages.length - 1]?.content && (
                     <div className="flex justify-start">
                         <div className="bg-[#2A2A2A] rounded-2xl rounded-bl-none border border-[#2E2E2E]">
                             <Spinner />
