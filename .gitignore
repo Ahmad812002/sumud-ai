@@ -1,0 +1,25 @@
+# Python
+.venv/
+venv/
+ENV/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.env
+
+# Node
+node_modules/
+frontend/dist/
+frontend/node_modules/
+npm-debug.log*
+
+# Uploaded/generated app data
+knowledge_base/
+uploads/
+*.pdf
+
+# Editors and OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

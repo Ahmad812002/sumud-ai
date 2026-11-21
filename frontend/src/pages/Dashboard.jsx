@@ -30,59 +30,46 @@ export default function Dashboard() {
     }
 
     return (
-        <div className="text-white p-6">
-            
-            {/* Welcome Section */}
-            <div className="bg-[#2A2A2A] rounded-xl p-6 mb-6 border border-[#2E2E2E]">
-                <h1 className="text-3xl font-bold text-[#007A3D] mb-2">
-                    Be Sumud in your life.
-                </h1>
-                <p className="text-[#A0A0A0] text-sm leading-relaxed">
-                    Sumud AI is your personal career coach — helping you find the right job, 
-                    score your fit, and generate tailored cover letters using your own data.
-                    I built this while actively searching for a job myself.
-                </p>
-                <p className="text-[#A0A0A0] text-sm mt-2">
-                    Feedback welcome: 
-                    <a href="mailto:ahmad812002@gmail.com" 
-                       className="text-[#C8102E] ml-1 hover:underline">
-                        ahmad812002@gmail.com
-                    </a>
-                </p>
-            </div>
-
-            {/* Stats Row */}
-            <div className="grid grid-cols-2 gap-4 mb-6">
-                <div className="bg-[#2A2A2A] rounded-xl p-4 border border-[#2E2E2E]">
-                    <p className="text-[#A0A0A0] text-xs mb-1">Documents Stored</p>
-                    <p className="text-3xl font-bold text-[#007A3D]">{count}</p>
+        <div className="page-inner">
+            <section className="hero-panel panel reveal">
+                <div className="hero-copy">
+                    <div className="eyebrow">Personal career office</div>
+                    <h1>Stay steady. <em>Move forward.</em></h1>
+                    <p>Sumud turns your experience into clearer applications, stronger matches, and better conversations.</p>
                 </div>
-                <div className="bg-[#2A2A2A] rounded-xl p-4 border border-[#2E2E2E]">
-                    <p className="text-[#A0A0A0] text-xs mb-1">Preferences</p>
-                    <p className="text-sm text-white">
-                        {preferences}
+                <div className="hero-number">
+                    <strong>{String(count).padStart(2, '0')}</strong>
+                    <span>Knowledge units</span>
+                </div>
+            </section>
+
+            <div className="stats-grid">
+                <section className="stat-card panel reveal">
+                    <p className="stat-label">Documents stored</p>
+                    <p className="stat-value green">{count}</p>
+                    <p className="stat-detail">Ready for contextual scoring</p>
+                </section>
+                <section className="stat-card panel reveal">
+                    <p className="stat-label">Current profile signal</p>
+                    <p className="stat-value" style={{ fontSize: '18px', lineHeight: 1.25 }}>
+                        {preferences === 'Not set yet' ? 'Profile preferences open' : preferences}
                     </p>
-                </div>
+                </section>
             </div>
 
-            {/* Preferences Section */}
-            <div className="bg-[#2A2A2A] rounded-xl p-6 border border-[#2E2E2E]">
-                <h2 className="text-lg font-semibold mb-4">Update Preferences</h2>
+            <section className="field-panel panel reveal">
+                <h2>Career preferences</h2>
                 <textarea
-                    className="w-full bg-[#1A1A1A] text-white border border-[#2E2E2E] rounded-lg p-3 text-sm resize-none focus:outline-none focus:border-[#C8102E]"
-                    rows={3}
-                    placeholder="e.g. remote, full-time, Germany, open to relocation..."
+                    className="text-field"
+                    style={{ minHeight: '112px', padding: '16px' }}
+                    placeholder="Remote, full-time, Berlin, open to relocation..."
                     value={newPreferences}
                     onChange={(e) => setNewPreferences(e.target.value)}
                 />
-                <button
-                    onClick={handleSavePreferences}
-                    className="mt-3 bg-[#C8102E] hover:bg-red-700 text-white px-6 py-2 rounded-lg text-sm transition-colors"
-                >
-                    Save Preferences
-                </button>
-            </div>
-
+                <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '12px' }}>
+                    <button onClick={handleSavePreferences} className="primary-button">Save preferences</button>
+                </div>
+            </section>
         </div>
     )
 }

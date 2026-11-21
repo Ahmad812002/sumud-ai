@@ -1,26 +1,39 @@
+import { useEffect, useState } from 'react'
 import { Outlet } from 'react-router-dom'
+import { Moon, Sun } from 'lucide-react'
 import Sidebar from './Sidebar'
 
 export default function Layout() {
-  return (
-    <div className="flex flex-col h-screen bg-[#1A1A1A] ">
-      
-      {/* Top bar */}
-      <div className="flex justify-between items-center px-6 py-3 bg-[#1A1A1A] border-b border-[#2E2E2E] shrink-0">
-        <span className="text-white font-bold text-lg">Sumud AI</span>
-        <div className="w-9 h-9 rounded-full bg-[#C8102E] flex items-center justify-center text-white text-sm font-bold">
-          AJ
-        </div>
-      </div>
+  const [theme, setTheme] = useState(() => localStorage.getItem('sumud-theme') || 'dark')
 
-      {/* Body */}
-      <div className="flex flex-1 overflow-hidden">
-        <Sidebar />
-        <main className="flex-1 overflow-y-auto bg-[#242424]">
+  useEffect(() => {
+    document.documentElement.dataset.theme = theme
+    localStorage.setItem('sumud-theme', theme)
+  }, [theme])
+
+  return (
+    <div className="app-shell">
+      <Sidebar />
+      <div className="main-column">
+        <header className="topbar">
+          <span className="topbar-kicker">Career intelligence / Private workspace</span>
+          <div className="topbar-actions">
+            <button
+              type="button"
+              className="theme-toggle"
+              onClick={() => setTheme(current => current === 'dark' ? 'light' : 'dark')}
+              aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} theme`}
+              title={`Switch to ${theme === 'dark' ? 'light' : 'dark'} theme`}
+            >
+              {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
+            </button>
+            <div className="topbar-avatar">AJ</div>
+          </div>
+        </header>
+        <main className="page">
           <Outlet />
         </main>
       </div>
-
     </div>
   )
 }
