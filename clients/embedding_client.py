@@ -1,18 +1,17 @@
 from nomic import embed
-from fastapi import HTTPException
 import numpy as np
+from exceptions import EmbeddingServiceError
 
 
 # This function is to get the embedding of a given text, it will return the embedding vector.
-def get_embedding(text):
+def get_embeddings(chunks, task_type="search_document"):
     try:
         response = embed.text(
-            texts=[text],
+            texts=chunks,
             model="nomic-embed-text-v1.5",
-            task_type="search_document",
+            task_type=task_type,
         )
-        embeddings = np.array(response['embeddings'][0])
-        return embeddings
+        return np.array(response['embeddings']).tolist()
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error occurred while generating embedding: {e}")
+        raise EmbeddingServiceError("Error occurred while generating embedding") from e
     
