@@ -4,8 +4,7 @@ from fastapi.staticfiles import StaticFiles
 from requests.help import main
 from routers import documents, scorer, chat, cover_letter, preferences
 from fastapi.middleware.cors import CORSMiddleware
-from exceptions import DuplicateDocumentError, EmptyDocumentError, UnsupportedFileTypeError, SumudError
-import os, logging
+import os, logging, exceptions
 
 app = FastAPI()
 router = APIRouter()
@@ -44,21 +43,27 @@ app.mount("/knowledge_base", StaticFiles(directory="knowledge_base"), name="know
 
 # instead of repeating try/except in every route, register it here once 
 STATUS_MAP = {
-    DuplicateDocumentError: 409,
-    EmptyDocumentError: 422,
-    UnsupportedFileTypeError: 415,
+    exceptions.DuplicateDocumentError: 409,
+    exceptions.EmptyDocumentError: 422,
+    exceptions.UnsupportedFileTypeError: 415,
+    exceptions.SumudError: 400,
+    exceptions.VectorStoreError: 401,
+    exceptions.SearchVectorError: 403,
 }
 
-@app.exception_handler(SumudError)
-async def sumud_error_handler(request: Request, exc: SumudError):
+@app.exception_handler(exceptions.SumudError)
+async def sumud_error_handler(request: Request, exc: exceptions.SumudError):
     status = STATUS_MAP.get(type(exc), 400)
+    if status >= 500 or exc.__cause__:
+        # logs the full chain: "The above exception was the direct cause of..."
+        logger.error("%s on %s %s", type(exc).__name__, request.method, request.url.path, exc_info=exc)
     return JSONResponse(status_code=status, content={"detail": str(exc)})
 
 
 @app.exception_handler(Exception)
 async def unhandled_error_handler(request: Request, exc: Exception):
     logger.exception("Unhandled error on %s %s", request.method, request.url.path)
-    return JSONResponse(status_code=500, content={"detail": "Internal server error"})
+    return JSONResponse(status_code=status, content={"detail": "Internal server error"})
 
 
 @app.get("/")
