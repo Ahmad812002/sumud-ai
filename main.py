@@ -45,10 +45,12 @@ app.mount("/knowledge_base", StaticFiles(directory="knowledge_base"), name="know
 STATUS_MAP = {
     exceptions.DuplicateDocumentError: 409,
     exceptions.EmptyDocumentError: 422,
+    exceptions.DocumentReadError: 422,
     exceptions.UnsupportedFileTypeError: 415,
     exceptions.SumudError: 400,
     exceptions.VectorStoreError: 401,
     exceptions.SearchVectorError: 403,
+   
 }
 
 @app.exception_handler(exceptions.SumudError)
@@ -63,7 +65,7 @@ async def sumud_error_handler(request: Request, exc: exceptions.SumudError):
 @app.exception_handler(Exception)
 async def unhandled_error_handler(request: Request, exc: Exception):
     logger.exception("Unhandled error on %s %s", request.method, request.url.path)
-    return JSONResponse(status_code=status, content={"detail": "Internal server error"})
+    return JSONResponse(status_code=500, content={"detail": "Internal server error"})
 
 
 @app.get("/")

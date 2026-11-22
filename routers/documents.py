@@ -1,12 +1,16 @@
-import json
-import ntpath
+import ntpath, exceptions, uuid
 
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel 
 from fastapi import APIRouter, File, HTTPException, UploadFile
-from data_access.document_reader import add_embedding
+from business_logic import embeddings_logic
 from data_access.db import get_embeddings_collection, get_records
 import os, shutil, asyncio
-from config.fingerprint import generate_fingerprint
+from utils.fingerprint import generate_fingerprint
+from data_access.embeddings import is_document_exists
+from config.settings import ALLOWED_EXTENSIONS
+from pathlib import Path
+
 
 
 router = APIRouter()
@@ -32,43 +36,42 @@ def get_documents_count():
 
 @router.post("/ingest_document")
 async def ingest_document(file: UploadFile = File(...)):
+    safe_name = ntpath.basename(file.filename or "")
+    ext = Path(safe_name).suffix.lower()
+
+    if ext not in ALLOWED_EXTENSIONS:
+        raise exceptions.UnsupportedFileTypeError(f"Unsupported file type: {ext or 'none'}")
+
+    os.makedirs("temporary", exist_ok=True)
+    os.makedirs("knowledge_base", exist_ok=True)
+
+    temp_path = Path("temporary") / f"{uuid.uuid4()}{ext}"
+
     try:
-        # updating id parameter to be <fingerprint_chunk number>
-
-        os.makedirs("temporary", exist_ok=True)
-        os.makedirs("knowledge_base", exist_ok=True)
-
-        temp_path = f"temporary/{ntpath.basename(file.filename)}"
-
         with open(temp_path, "wb") as buffer:
             await asyncio.to_thread(shutil.copyfileobj,file.file, buffer)
 
-
-
         # to generate a fingerprint to each file, so that we can check if the document is already ingested or not.
         fingerprint = await asyncio.to_thread(generate_fingerprint, temp_path)
+        if await asyncio.to_thread(is_document_exists, fingerprint):
+            raise exceptions.DuplicateDocumentError(f"{safe_name} is already ingested")
 
         # updated how endpoint receive a response
-        res = await asyncio.to_thread(add_embedding, temp_path, file.filename, fingerprint, "document")
-        print("response: ",res)
-        file_path = f"knowledge_base/{ntpath.basename(file.filename)}"
-        if(res == 201 ):
-            await asyncio.to_thread(shutil.move, temp_path, file_path)
-        if(res == 409):
-            await asyncio.to_thread(os.remove, temp_path)
+        count = await asyncio.to_thread(
+            embeddings_logic.process_before_store_embedding,
+            temp_path, safe_name, fingerprint, "document",
+        )
+        
 
-        return res
-    except HTTPException:
-        raise
-    except ValueError as e:
-        raise HTTPException(status_code=400, detail=str(e))
-    except Exception as e:
-        print("Error occurred while ingesting document:", e)
-        raise HTTPException(status_code=500, detail=f"Error occurred while ingesting document: {str(e)}")
+        await asyncio.to_thread(shutil.move, temp_path, Path("knowledge_base") / f"{fingerprint}{ext}")
+        
+
+        return JSONResponse(status_code=201, content={
+            "message": "Document ingested successfully",
+            "chunks_stored": count,
+        })
     finally:
         temp_path.unlink(missing_ok=True)
-
-
 
 @router.get("/get_cv")
 def get_cv():
@@ -88,13 +91,11 @@ async def upload_cv(file: UploadFile = File(...)):
     try:
         safe_name = ntpath.basename(file.filename)
 
-
-
         os.makedirs("temporary", exist_ok=True)
         temp_file_path = f"temporary/{ntpath.basename(file.filename)}"
 
         fingerprint = await asyncio.to_thread(generate_fingerprint, temp_file_path)
-        res = await asyncio.to_thread(add_embedding, temp_file_path, safe_name, fingerprint, "cv")
+        res = await asyncio.to_thread(embeddings_logic.process_before_store_embedding, temp_file_path, safe_name, fingerprint, "cv")
 
         # Ensure the cv directory exists
         os.makedirs("knowledge_base/cv", exist_ok=True)
@@ -106,8 +107,6 @@ async def upload_cv(file: UploadFile = File(...)):
             await asyncio.to_thread(shutil.move, temp_file_path, final_path)
         if(res.status_code == 409):
             await asyncio.to_thread(os.remove, temp_file_path)
-        
-
 
         # Remove existing CV files
         for existing_file in os.listdir("knowledge_base/cv"):
