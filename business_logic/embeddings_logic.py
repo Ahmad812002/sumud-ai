@@ -4,30 +4,30 @@ from fastapi import HTTPException
 from fastapi.responses import JSONResponse
 from data_access.embeddings import search_embedding, store_embedding, get_embeddings_collection
 from data_access import document_reader
-from clients import embedding_client
+from clients.embedding_client import get_embedding
 from config.settings import RELEVANCE_MAX_DISTANCE, DEFAULT_N_RESULTS, CHUNK_SIZE, OVERLAP_SIZE
-
+from exceptions import VectorStoreError
 
 
 
 def chunk_text(text):
     # This function applies a simple chunking strategy based on a fixed character limit.
-    
     chunks = []
-    try:
-        for i in range(0, len(text), CHUNK_SIZE - OVERLAP_SIZE): # Move back by overlap_size to create overlap
-            chunks.append(text[i:i+CHUNK_SIZE])
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error occurred while chunking text: {e}")
+    for i in range(0, len(text), CHUNK_SIZE - OVERLAP_SIZE): # Move back by overlap_size to create overlap
+        chunks.append(text[i:i+CHUNK_SIZE])
     return chunks 
 
-def find_relevant_chunks(text: str, n_results: int = DEFAULT_N_RESULTS):
-    query_vector = embedding_client.get_embedding(text)
-    return search_embedding(
-        query_vector,
-        n_results,
-        max_distance=RELEVANCE_MAX_DISTANCE,
-    )
+def find_relevant_chunks(text: str, n_results):
+    try:
+        query_vector = get_embedding(text)
+
+        return search_embedding(
+            query_vector,
+            n_results,
+            max_distance=RELEVANCE_MAX_DISTANCE,
+        )
+    except Exception as e:
+        raise VectorStoreError("Could not get relative chunks") from e
 
 def process_before_store_embedding(file_path, file_name, fingerprint, _type):
     try:
