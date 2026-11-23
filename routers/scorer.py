@@ -1,7 +1,8 @@
 from pydantic import BaseModel
 from data_access.db import get_preferences_collection
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter
 from business_logic.scorer_logic import run_scorer
+from exceptions import ScorerServiceError
 
 
 router = APIRouter()
@@ -25,9 +26,6 @@ def scorer_endpoint(request: ScoreRequest):
 
         result = run_scorer(request.job_description.strip(), preferences)
         return result
-    except ValueError as e:
-        raise  HTTPException(status_code=400, detail=str(e))
     except Exception as e:
-        print("scorer: ", e)
-        raise HTTPException(status_code=500, detail=str(e))
+       raise ScorerServiceError("Error occurred while generating embedding") from e
 

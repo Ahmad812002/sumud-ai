@@ -2,7 +2,7 @@ import exceptions
 from data_access.embeddings import search_embedding, store_embeddings, get_embeddings_collection
 from data_access import document_reader
 from clients.embedding_client import get_embeddings
-from config.settings import RELEVANCE_MAX_DISTANCE, DEFAULT_N_RESULTS, CHUNK_SIZE, OVERLAP_SIZE
+from config.settings import THRESHOLD, DEFAULT_N_RESULTS, CHUNK_SIZE, OVERLAP_SIZE
 
 
 
@@ -13,19 +13,13 @@ def chunk_text(text):
         chunks.append(text[i:i+CHUNK_SIZE])
     return chunks 
 
-def find_relevant_chunks(text: str, n_results):
-    try:
-        chunks = chunk_text(text)
-        query_vector = get_embeddings(chunks, "search_document")
-
-        return search_embedding(
-            query_vector,
-            n_results,
-            max_distance=RELEVANCE_MAX_DISTANCE,
-        )
-    except Exception as e:
-        raise exceptions.VectorStoreError("Could not get relative chunks") from e
-
+def find_relevant_chunks(query_vector: str, n_results=DEFAULT_N_RESULTS):
+    relative_chunks = search_embedding(
+                            query_vector,
+                            n_results,
+                        )
+    return [r for r in relative_chunks if r["distance"] <= THRESHOLD ]
+    
 def process_before_store_embedding(file_path, file_name, fingerprint, _type):
     text_document = document_reader.read_document(file_path)
     if(text_document.strip() == ""):

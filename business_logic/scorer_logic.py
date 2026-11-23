@@ -1,23 +1,22 @@
-from fastapi import HTTPException
-
-from data_access.embeddings import search_embedding
 from config.prompts import job_scorer_prompt
-from clients import llm, embedding_client
-from config.settings import RELEVANCE_MAX_DISTANCE, DEFAULT_N_RESULTS
+from clients import llm
+from config.settings import DEFAULT_N_RESULTS
 import json
-from business_logic.embeddings_logic import find_relevant_chunks
+from business_logic.embeddings_logic import  find_relevant_chunks
 import exceptions
-
+from clients.embedding_client import get_embeddings
 
 
 # It will get the embedding of the entire job description and search for similar documents in the database.
 def process_job_description(job_description):
-    job_embedding = embedding_client.get_embedding(job_description)
-    profile_chunks = find_relevant_chunks(job_embedding, DEFAULT_N_RESULTS)
+
+    query_vector = get_embeddings([job_description], "search_query")
+    profile_chunks = find_relevant_chunks(query_vector, DEFAULT_N_RESULTS)
+    print(len(profile_chunks))
     
     # search_embedding(job_embedding, DEFAULT_N_RESULTS, RELEVANCE_MAX_DISTANCE)
     if profile_chunks:
-        return "\n".join([chunk['documents'] for chunk in profile_chunks])
+        return profile_chunks
     return None
     
 
@@ -34,15 +33,15 @@ def format_scorer_result_json(ai_reply):
     }
        
 def run_scorer(job_description: str, job_preferences: str):
-        # next plan (using the name of the user after adding Authentication and multi-user support)
-        # validate
+    # next plan (using the name of the user after adding Authentication and multi-user support)
+    # validate
 
     if len(job_description.strip()) < 50:
         raise exceptions.InvalidInputError("No relevant profile information found. Add documents first.")
         
         # process
     profile_chunks = process_job_description(job_description)
-    print(profile_chunks)
+    
     if(profile_chunks is None):
         return None
         

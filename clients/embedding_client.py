@@ -6,6 +6,7 @@ from exceptions import EmbeddingServiceError
 # This function is to get the embedding of a given text, it will return the embedding vector.
 def get_embeddings(chunks, task_type="search_document"):
     try:
+        
         response = embed.text(
             texts=chunks,
             model="nomic-embed-text-v1.5",
