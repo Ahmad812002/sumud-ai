@@ -1,11 +1,9 @@
-from clients.client import initialize_client
-import openai   
-from config.prompts import chat_bot_prompt, chat_prompt
-from business_logic.chat_logic import get_embedding, get_embedding_result
+from clients import client
+import openai
 
 
 
-client = initialize_client()
+_client = client.initialize_client()
 
 messages_arr = []
 
@@ -15,7 +13,7 @@ def llm_scorer(prompt, job_description):
         messages_arr = [prompt]
         messages_arr.append({"role": "user", "content": f"Please evaluate this job description: {job_description}"})
         
-        response = client.chat.completions.create(
+        response = _client.chat.completions.create(
             model="gemini-3.5-flash-lite",
             messages= messages_arr[-10:] ,
             max_tokens=1024,
@@ -48,8 +46,6 @@ def llm_scorer(prompt, job_description):
     if reply is None:
         return {"error": "Could not generate a response. Please try again."}
 
-    print("usage: ", response.usage)
-
 
     return response.choices[0].message.content
 
@@ -60,7 +56,7 @@ def llm_cover_letter(prompt, job_description):
     print(messages_arr)
     messages_arr.append({"role": "user", "content": f"Please evaluate this job description for building the coverletter: {job_description}"})
     try:
-        response = client.chat.completions.create(
+        response = _client.chat.completions.create(
             model="gemini-3.5-flash-lite",
             messages= messages_arr[-2:],
             max_tokens=4092,
@@ -105,7 +101,7 @@ def llm_chat(prompt, message):
         messages_arr = [prompt]
         messages_arr.append({"role": "user", "content": message})
         #LLM part
-        response = client.chat.completions.create(
+        response = _client.chat.completions.create(
             model = "gemini-3.5-flash-lite",
             messages = messages_arr[-10:],
             temperature=1.0, # This is to make the model's response more creative and less deterministic, it will also help the model to provide more diverse responses and avoid repeating the same response.
