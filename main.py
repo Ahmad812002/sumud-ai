@@ -47,14 +47,14 @@ STATUS_MAP = {
     exceptions.DocumentError: 422,
     exceptions.DuplicateDocumentError: 409,
     exceptions.UnsupportedFileTypeError: 415,
-    exceptions.EmptyFileError: 400,
-    exceptions.DocumentReadError: 404,
+    exceptions.EmptyFileError: 422,
+    exceptions.DocumentReadError: 422,
     exceptions.InvalidInputError: 400,
     exceptions.VectorStoreError: 503,           # our database is unavailable or failing
     exceptions.EmbeddingServiceError: 502,      # external provider failed
     exceptions.LLMServiceError: 502,
     exceptions.LLMTimeoutError: 504,
-    exceptions.LLMResponseError: 501,
+    exceptions.LLMResponseError: 502,
     exceptions.LLMUnavailableError: 503,
     exceptions.ExternalServiceError: 502,
 }
