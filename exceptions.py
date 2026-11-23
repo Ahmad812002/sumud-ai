@@ -5,17 +5,23 @@ class SumudError(Exception):
         self.message = message
         self.details = details
 
-# --- documents (user's file is the problem) ---
+# --- documents (the user's file is the problem) ---
 class DocumentError(SumudError): pass
 class DuplicateDocumentError(DocumentError): pass
 class UnsupportedFileTypeError(DocumentError): pass
 class EmptyFileError(DocumentError): pass
 class DocumentReadError(DocumentError): pass
+
 # --- input ---
 class InvalidInputError(SumudError): pass
 
-# --- infrastructure (our systems or providers are the problem) ---
+# --- our own infrastructure ---
 class VectorStoreError(SumudError): pass
-class SearchVectorError(SumudError): pass
-class EmbeddingServiceError(SumudError): pass
-class LLMServiceError(SumudError): pass
+
+# --- external providers ---
+class ExternalServiceError(SumudError): pass
+class EmbeddingServiceError(ExternalServiceError): pass
+class LLMServiceError(ExternalServiceError): pass
+class LLMResponseError(LLMServiceError): pass      # empty, cut off, unparsable, missing fields
+class LLMTimeoutError(LLMServiceError): pass
+class LLMUnavailableError(LLMServiceError): pass   # rate limit or provider overload

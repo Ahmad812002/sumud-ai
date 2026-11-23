@@ -43,16 +43,20 @@ app.mount("/knowledge_base", StaticFiles(directory="knowledge_base"), name="know
 
 # instead of repeating try/except in every route, register it here once 
 STATUS_MAP = {
-    exceptions.SumudError: 400,                 # fallback for any unmapped domain error
-    exceptions.DocumentError: 422,              # EmptyFileError and DocumentReadError inherit this
+    exceptions.SumudError: 400,
+    exceptions.DocumentError: 422,
     exceptions.DuplicateDocumentError: 409,
     exceptions.UnsupportedFileTypeError: 415,
+    exceptions.EmptyFileError: 400,
+    exceptions.DocumentReadError: 404,
     exceptions.InvalidInputError: 400,
     exceptions.VectorStoreError: 503,           # our database is unavailable or failing
-    exceptions.SearchVectorError: 503,
     exceptions.EmbeddingServiceError: 502,      # external provider failed
     exceptions.LLMServiceError: 502,
-    exceptions.ScorerServiceError:502,
+    exceptions.LLMTimeoutError: 504,
+    exceptions.LLMResponseError: 501,
+    exceptions.LLMUnavailableError: 503,
+    exceptions.ExternalServiceError: 502,
 }
 
 @app.exception_handler(exceptions.SumudError)
