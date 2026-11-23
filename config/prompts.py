@@ -1,9 +1,6 @@
 
 
 #Handleing prompt for chat_bot mode
-
-
-
 def chat_bot_prompt(chunks):
     system = ''
     print(chunks)
@@ -137,7 +134,7 @@ def german_cover_letter_prompt(profile_candidate, fit_category, matching_points,
     {{
         "opening": "<paragraph>",
         "middle": "<paragraph>",
-        "company_interest": "<paragraph>",
+        "soft_skills": "<paragraph>",
         "closing": "<paragraph>"
     }}
 
