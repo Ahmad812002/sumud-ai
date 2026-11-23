@@ -22,7 +22,7 @@ everything runs.
 **Hosting:** managed service · self-hosted (for the database and for Chroma)
 
 ## Criteria and comparison
-| Criterion | PostgreSQL | MongoDB |
+| Criterion | PostgreSQL | MongoDB | Supabase
 |---|---|---|
 | Fit for users→documents data | | |
 | Team familiarity and speed to Dec 7 | | |
