@@ -52,6 +52,7 @@ STATUS_MAP = {
     exceptions.SearchVectorError: 503,
     exceptions.EmbeddingServiceError: 502,      # external provider failed
     exceptions.LLMServiceError: 502,
+    exceptions.ScorerServiceError:502,
 }
 
 @app.exception_handler(exceptions.SumudError)
