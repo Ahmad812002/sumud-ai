@@ -3,14 +3,14 @@
 #Handleing prompt for chat_bot mode
 def chat_bot_prompt(chunks):
     system = ''
-    print(chunks)
+
     if(chunks is not None):
         system += f"these are the context to answer: {chunks}"
     system += f"""
         You are a highly precise, knowledgeable, and helpful AI assistant. Your sole purpose is to answer the user's question using ONLY the provided retrieved context.
 
         [RULES AND CONSTRAINTS]
-        1. If context is provided, you must prioritize it in your answer and cite sources, they are metadata in teh context.
+        1. If context is provided, you must prioritize it in your answer and cite sources, they are metadata in the context.
         2. If no context is provided, answer helpfully from your own knowledge and tell the user that you don't have enough personalized data.
         3. Do not speculate about facts not in the context or your training, tell the user that you don't have enough personlized data.
     """

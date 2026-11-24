@@ -40,7 +40,6 @@ os.makedirs("knowledge_base", exist_ok=True)
 app.mount("/cv", StaticFiles(directory="knowledge_base/cv"), name="cv")
 app.mount("/knowledge_base", StaticFiles(directory="knowledge_base"), name="knowledge_base")
 
-
 # instead of repeating try/except in every route, register it here once 
 STATUS_MAP = {
     exceptions.SumudError: 400,

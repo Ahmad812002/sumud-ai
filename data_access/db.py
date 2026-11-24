@@ -28,17 +28,16 @@ def get_embeddings_collection():
     try:
         return get_chroma_client().get_or_create_collection(name="embeddings")
     except Exception as e:
-        raise RuntimeError(f"Failed to get embeddings collection: {str(e)}")
+        raise RuntimeError("Couldn't get embeddings collection") from e
 
 def get_records():
     try:
         collection = get_embeddings_collection().get()
         if(collection is None or 'ids' not in collection or len(collection['ids']) == 0):
-            return {"message": "No documents found."}
+            return None
         return collection
     except Exception as e: 
-        print("error:", e)
-        raise RuntimeError(f"Failed to get documents: {str(e)}")
+        raise RuntimeError(f"Failed to get documents") from e
 
 # Remove every chunk that belongs to one file.
 def delete_chunks_by_fingerprint(fingerprint):

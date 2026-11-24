@@ -13,12 +13,12 @@ def chunk_text(text):
         chunks.append(text[i:i+CHUNK_SIZE])
     return chunks 
 
-def find_relevant_chunks(query_vector: str, n_results=DEFAULT_N_RESULTS):
+def find_relevant_chunks(query_vector: str, n_results=DEFAULT_N_RESULTS, threshold=THRESHOLD):
     relative_chunks = search_embedding(
                             query_vector,
                             n_results,
                         )
-    return [r for r in relative_chunks if r["distance"] <= THRESHOLD ]
+    return [r for r in relative_chunks if r["distance"] <= threshold ]
     
 def process_before_store_embedding(file_path, file_name, fingerprint, _type):
     text_document = document_reader.read_document(file_path)
