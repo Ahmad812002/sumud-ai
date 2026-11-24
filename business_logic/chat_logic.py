@@ -1,5 +1,4 @@
 from config.prompts import chat_prompt
-from data_access.embeddings import search_embedding
 from clients import embedding_client, llm
 from config.settings import CHAT_THRESHOLD
 from business_logic.embeddings_logic import find_relevant_chunks
