@@ -18,7 +18,7 @@ def collecting_preferences():
 def upserting_preferences(preferences: str):
     try:
         collection = get_preferences_collection()
-        collection.update(
+        collection.upsert(
                     ids=[PREFERENCES_ID],
                     documents=[preferences],
                 )

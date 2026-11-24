@@ -94,7 +94,7 @@ export const getRecordsCount  = () =>{
     return api.get('/get_records_count')
 }
 
-export const ingestCV = (file) => {
+export const upload_CV = (file) => {
     const formData = new FormData()
     formData.append('file', file)
     return api.post('/upload_cv', formData, {
@@ -105,6 +105,7 @@ export const ingestCV = (file) => {
 export const ingestDocument = (file) => {
     const formData = new FormData()
     formData.append('file', file)
+    
     return api.post('/ingest_document', formData, {
         headers: { 'Content-Type': 'multipart/form-data' }
     })
@@ -113,6 +114,7 @@ export const ingestDocument = (file) => {
 export const getCV = () => {
     return api.get("/get_cv")
 }
+
 
 
 export default api

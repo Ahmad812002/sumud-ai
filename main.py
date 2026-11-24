@@ -4,8 +4,7 @@ from fastapi.staticfiles import StaticFiles
 from requests.help import main
 from routers import documents, scorer, chat, cover_letter, preferences
 from fastapi.middleware.cors import CORSMiddleware
-from exceptions import DuplicateDocumentError, EmptyDocumentError, UnsupportedFileTypeError, SumudError
-import os, logging
+import os, logging, exceptions
 
 app = FastAPI()
 router = APIRouter()
@@ -41,17 +40,30 @@ os.makedirs("knowledge_base", exist_ok=True)
 app.mount("/cv", StaticFiles(directory="knowledge_base/cv"), name="cv")
 app.mount("/knowledge_base", StaticFiles(directory="knowledge_base"), name="knowledge_base")
 
-
 # instead of repeating try/except in every route, register it here once 
 STATUS_MAP = {
-    DuplicateDocumentError: 409,
-    EmptyDocumentError: 422,
-    UnsupportedFileTypeError: 415,
+    exceptions.SumudError: 400,
+    exceptions.DocumentError: 422,
+    exceptions.DuplicateDocumentError: 409,
+    exceptions.UnsupportedFileTypeError: 415,
+    exceptions.EmptyFileError: 422,
+    exceptions.DocumentReadError: 422,
+    exceptions.InvalidInputError: 400,
+    exceptions.VectorStoreError: 503,           # our database is unavailable or failing
+    exceptions.EmbeddingServiceError: 502,      # external provider failed
+    exceptions.LLMServiceError: 502,
+    exceptions.LLMTimeoutError: 504,
+    exceptions.LLMResponseError: 502,
+    exceptions.LLMUnavailableError: 503,
+    exceptions.ExternalServiceError: 502,
 }
 
-@app.exception_handler(SumudError)
-async def sumud_error_handler(request: Request, exc: SumudError):
+@app.exception_handler(exceptions.SumudError)
+async def sumud_error_handler(request: Request, exc: exceptions.SumudError):
     status = STATUS_MAP.get(type(exc), 400)
+    if status >= 500 or exc.__cause__:
+        # logs the full chain: "The above exception was the direct cause of..."
+        logger.error("%s on %s %s", type(exc).__name__, request.method, request.url.path, exc_info=exc)
     return JSONResponse(status_code=status, content={"detail": str(exc)})
 
 
@@ -71,7 +83,6 @@ app.include_router(chat.router, prefix="/api/v1", tags=["chat"])
 app.include_router(cover_letter.router, prefix="/api/v1", tags=["cover-letter"])
 app.include_router(preferences.router, prefix="/api/v1", tags=["preferences"])
 app.include_router(documents.router, prefix="/api/v1", tags=["documents"])
-
 
 
 if __name__ == "__main__":

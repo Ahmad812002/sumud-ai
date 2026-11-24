@@ -1,51 +1,19 @@
 from config.prompts import chat_prompt
-import data_access.embeddings
-import business_logic.llm
-import json
+from clients.embedding_client import get_embeddings
+from config.settings import CHAT_THRESHOLD
+from business_logic.embeddings_logic import find_relevant_chunks
+from data_access.embeddings import search_embedding
+from llm import llm_chat
 
 # This function is to process the chat message, it will take the message as input and chunk it and search for relevant information to generate the response from the LLM.
 def process_chat(message):
 
-    embedded_vector = get_embedding(message)
-    vector_embedding_result = get_embedding_result(embedded_vector, 8)
+    # getting embedding of the message to search for relevant information in the vector database.
+    embedded_chat_vector = get_embeddings([message])
+    relative_chat_chunks = find_relevant_chunks(embedded_chat_vector, 8, CHAT_THRESHOLD)
             
-    if vector_embedding_result is not None:
-        chunks = "\n".join([chunk['documents'] for chunk in vector_embedding_result])
-
-    prompt = chat_prompt(chunks, message)
-    reply = business_logic.llm.llm_chat(prompt, message)
-
-
-    if reply is None: 
-        return { "ai_answer": "Couldn't generate a response. Please try again." }
-    if reply is None and chunks is not None: 
-        return { "ai_answer": "I found relevant information but couldn't generate a response. Please try again." }
+    prompt = chat_prompt(relative_chat_chunks, message)
+    reply = llm_chat(prompt, message)
     
     return { "ai_answer": reply }
-
-
-def process_chat_stream(message):
-    embedded_vector = get_embedding(message)
-    vector_embedding_result = get_embedding_result(embedded_vector, 8)
-
-    chunks = ""
-    if vector_embedding_result is not None:
-        chunks = "\n".join([chunk['documents'] for chunk in vector_embedding_result])
-
-    prompt = chat_prompt(chunks, message)
-    yield from business_logic.llm.llm_chat_stream(prompt, message)
-
-# getting embedding of the message to search for relevant information in the vector database.
-def get_embedding(message):
-    try:
-        return data_access.embeddings.get_embedding(message)
-    except Exception as e:
-        raise ValueError(f"Error occurred while getting embedding: {str(e)}")
-
-# getting embedding result from the vector database to find relevant information for the message.
-def get_embedding_result(embedded_vector, n_results):
-    try:
-        return data_access.embeddings.search_embedding(embedded_vector, n_results)
-    except Exception as e:
-        raise ValueError(f"Error occurred while searching embedding: {str(e)}")
     

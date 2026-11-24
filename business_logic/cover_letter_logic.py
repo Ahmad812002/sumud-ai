@@ -1,63 +1,40 @@
 import json
 from config.prompts import cover_letter_prompt, german_cover_letter_prompt
-from .llm import llm_cover_letter
+from clients.llm import llm_cover_letter
+import exceptions, re
 
-def run_cover_letter(profile_chunks, job_description, fit_category, matching_points =[], soft_skills =[], reasoning = ""):
-    try:
-        language = detect_language(job_description)
+GERMAN_WORDS = {"die", "der", "das", "und", "für", "sie", "wir", "mit",
+                "von", "auf", "suchen", "stelle", "kenntnisse", "erfahrung"}
 
-        if(language == "German"):
-            formated_prompt = german_cover_letter_prompt(
-                        profile_chunks, 
-                        fit_category,
-                        matching_points,
-                        soft_skills,
-                        reasoning
-                    )
-        else:
-            formated_prompt = cover_letter_prompt(
-                        profile_chunks, 
-                        fit_category,
-                        matching_points,
-                        soft_skills,
-                        reasoning
-                    )
 
-        cover_letter_response = llm_cover_letter(formated_prompt, job_description)
-        # sometimes it returned as lazy object 
-        cover_letter_formated_response = format_cover_letter_json(str(cover_letter_response))
-        
-        if(cover_letter_formated_response['opening'] is not None):
-            return {
-                        "opening": cover_letter_formated_response['opening'],
-                        "middle": cover_letter_formated_response['middle'],
-                        "soft_skills": cover_letter_formated_response['soft_skills'],
-                        "closing": cover_letter_formated_response['closing']
-                    }
-    except Exception as e:
-        raise ValueError(f"Error occurred while generating cover letter: {str(e)}")
+def run_cover_letter(profile_chunks, job_description, fit_category, matching_points=None, soft_skills=None, reasoning=""):
+    language = detect_language(job_description)
+
+    build_prompt = german_cover_letter_prompt if language == "German" else cover_letter_prompt
+    prompt = build_prompt(profile_chunks,
+        fit_category,
+        matching_points or [],     # None -> fresh empty list for this call
+        soft_skills or [],
+        reasoning,
+    )
+
+    cover_letter_response = llm_cover_letter(prompt, job_description)
+    return format_cover_letter_json(cover_letter_response)
 
 
 def detect_language(text: str) -> str:
-    # Simple detection — check for common German words
-    german_indicators = ['die', 'der', 'das', 'und', 'für', 'Sie', 
-                         'wir', 'mit', 'von', 'auf', 'Wir', 'suchen',
-                         'Stelle', 'Kenntnisse', 'Erfahrung']
-    
-    text_lower = text.lower()
-    german_count = sum(1 for word in german_indicators 
-                       if f' {word.lower()} ' in text_lower)
-    
-    return "German" if german_count >= 3 else "English"
+    words = set(re.findall(r"\w+", text.lower())) 
+    # `&` keeps only the words found in both sets
+    return "German" if len(words & GERMAN_WORDS) >= 3 else "English"
 # Fromating ai json response to be more readable 
 def format_cover_letter_json(ai_reply):
     try:
         result = json.loads(ai_reply)
-        return {
-            "opening": result['opening'],
-            "middle": result['middle'],
-            "soft_skills": result['soft_skills'],
-            "closing": result['closing']
-        }
-    except json.JSONDecodeError:
-            raise ValueError(f"LLM returned invalid JSON: {ai_reply}")
+    except json.JSONDecodeError as e:
+        raise exceptions.LLMResponseError("The AI response could not be parsed") from e
+    return {
+        "opening": result['opening'],
+        "middle": result['middle'],
+        "soft_skills": result['soft_skills'],
+        "closing": result['closing']
+    }

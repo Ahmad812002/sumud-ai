@@ -10,7 +10,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 # Create knowledge_base folders at runtime
-RUN mkdir -p knowledge_base/cv
+RUN mkdir -p knowledge_base/
 
 # Expose FastAPI port
 EXPOSE 8000
