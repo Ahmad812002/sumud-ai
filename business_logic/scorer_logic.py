@@ -1,19 +1,17 @@
 from config.prompts import job_scorer_prompt
 from clients import llm
-from config.settings import DEFAULT_N_RESULTS
-import json
+from config.settings import DEFAULT_N_RESULTS, THRESHOLD 
+import json, exceptions
 from business_logic.embeddings_logic import  find_relevant_chunks
-import exceptions
 from clients.embedding_client import get_embeddings
 
 
 # It will get the embedding of the entire job description and search for similar documents in the database.
 def process_job_description(job_description):
-
+    # for multilingual search_query returns null the main casue is nomic-embed-text-v1.5. 
     query_vector = get_embeddings([job_description], "search_query")
-    profile_chunks = find_relevant_chunks(query_vector, DEFAULT_N_RESULTS)
-    print(len(profile_chunks))
-    
+    profile_chunks = find_relevant_chunks(query_vector, DEFAULT_N_RESULTS, THRESHOLD)
+
     # search_embedding(job_embedding, DEFAULT_N_RESULTS, RELEVANCE_MAX_DISTANCE)
     if profile_chunks:
         return profile_chunks
@@ -22,7 +20,10 @@ def process_job_description(job_description):
 
 
 def format_scorer_result_json(ai_reply):
-    result = json.loads(ai_reply)
+    try:
+        result = json.loads(ai_reply)
+    except json.JSONDecodeError as e:
+        raise exceptions.LLMResponseError("The AI response could not be parsed") from e
     return {
         "fit_score": result['fit_score'],
         "fit_category": result['fit_category'],
@@ -50,9 +51,8 @@ def run_scorer(job_description: str, job_preferences: str):
     raw_result = llm.llm_scorer(formatted_prompt, job_description)
 
     # this looks like string but aren't until resolved (lazy object)
-    parsed = format_scorer_result_json(str(raw_result))
-    if(parsed is None):
-        raise exceptions.LLMServiceError("LLM response could not be parsed")
+    parsed = format_scorer_result_json(raw_result)
+    
     return {
         "fit_score": parsed['fit_score'],
         "fit_category": parsed['fit_category'],
