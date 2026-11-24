@@ -19,21 +19,21 @@ def _call_llm(feature: str, **kwargs) -> str:
     """The only place that talks to the provider. Every failure becomes one of our exceptions."""
     try:
         response = _client.chat.completions.create(model=MODEL, timeout=60, **kwargs)
-
-    except openai.RateLimitError as e:
-        raise exceptions.LLMUnavailableError("The AI service is busy, please try again shortly", details=_details(feature, e)) from e
-    
-    except openai.InternalServerError as e:       # provider overloaded or failing (5xx)
-        raise exceptions.LLMUnavailableError("The AI service is temporarily unavailable, please try again", details=_details(feature, e)) from e
     
     except openai.APITimeoutError as e:        # most specific first
         raise exceptions.LLMTimeoutError("The AI service took too long to respond", details=_details(feature, e)) from e
-    
+
+    except openai.RateLimitError as e:
+            raise exceptions.LLMUnavailableError("The AI service is busy, please try again shortly", details=_details(feature, e)) from e
+
+    except openai.InternalServerError as e:       # provider overloaded or failing (5xx)
+            raise exceptions.LLMUnavailableError("The AI service is temporarily unavailable, please try again", details=_details(feature, e)) from e
+
     except openai.AuthenticationError as e:    # our API key/config problem, not the user's
-        raise exceptions.LLMServiceError("The AI service is not configured correctly", details=_details(feature, e)) from e
-    
+            raise exceptions.LLMServiceError("The AI service is not configured correctly", details=_details(feature, e)) from e
+
     except openai.APIError as e:               # base class last: everything else from the SDK
-        raise exceptions.LLMServiceError("The AI service failed", details=_details(feature, e)) from e
+            raise exceptions.LLMServiceError("The AI service failed", details=_details(feature, e)) from e
 
     if not response.choices:
         raise exceptions.LLMResponseError("The AI service returned no result", details={"feature": feature})
