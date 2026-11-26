@@ -11,3 +11,6 @@ python-docx
 requests
 pypdf
 jspdf
+chromadb
+supabase
+email-validator

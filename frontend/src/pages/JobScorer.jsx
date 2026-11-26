@@ -35,7 +35,6 @@ export default function JobScorer() {
             setCoverLetter(null)
             const res = await scoreJob(jobDescription)
             setScorerResult(res.data)
-            console.log(res.data)
         } catch (err) {
             console.error(err)
             alert('Scoring failed. Make sure the backend is running.')
@@ -47,12 +46,16 @@ export default function JobScorer() {
     const handleGenerateCoverLetter = async () => {
         try {
             setLoadingCover(true)
+            // after updating how scorer returns profile chunks we need to prepare it before send it to cover letter
+            const documents = scorerResult.profile_chunks
+                            .map(item => item.document)
+                            .join('\n\n');
 
             const res = await generateCoverLetter(jobDescription,
                 scorerResult.fit_category,
                 scorerResult.matching_points, 
                 scorerResult.soft_skills,
-                scorerResult.profile_chunks,
+                documents,
                 scorerResult.reasoning
             )
             

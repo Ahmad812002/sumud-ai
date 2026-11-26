@@ -15,24 +15,11 @@ class CoverLetterRequest(BaseModel):
 
 @router.post("/cover_letter")
 def generate_cover_letter(request: CoverLetterRequest): 
-    try:
-        generated_cover_letter = run_cover_letter(request.profile_chunks,
-                                                request.job_description,
-                                                request.fit_category,
-                                                request.matching_points,
-                                                request.soft_skills,
-                                                request.reasoning)
-
-        if(generated_cover_letter['opening']):
-            return {
-                        "opening": generated_cover_letter['opening'],
-                        "middle": generated_cover_letter['middle'],
-                        "soft_skills": generated_cover_letter['soft_skills'],
-                        "closing": generated_cover_letter['closing']
-                        }
-    except ValueError as e:
-        print(e)
-        raise  HTTPException(status_code=400, detail=str(e))
-    except Exception as e:
-        print(e)
-        raise HTTPException(status_code=500, detail=str(e))
+    return run_cover_letter(
+            request.profile_chunks,
+            request.job_description,
+            request.fit_category,
+            request.matching_points,
+            request.soft_skills,
+            request.reasoning
+        )

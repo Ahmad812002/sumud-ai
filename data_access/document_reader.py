@@ -1,44 +1,38 @@
 import docx
 from pypdf import PdfReader
-from fastapi import HTTPException
+import exceptions
+from pathlib import Path
 
+def _read_text_file(path: Path) -> str:
+    return path.read_text(encoding="utf-8")
 
-# reading four types of ducments 
-def read_document(document):
+def _read_pdf(path: Path) -> str:
+    reader = PdfReader(str(path))
+    if reader.is_encrypted:
+        raise exceptions.DocumentReadError("The PDF is password-protected")
+    return "\n".join((page.extract_text() or "") for page in reader.pages)
+
+def _read_docx(path: Path) -> str:
+    doc = docx.Document(str(path))
+    return "\n".join(p.text for p in doc.paragraphs)
+
+READERS = {
+    ".txt": _read_text_file,
+    ".md": _read_text_file,
+    ".pdf": _read_pdf,
+    ".docx": _read_docx,
+}
+
+def read_document(document) -> str:
+    path = Path(document)                      # accepts str or Path
+    reader = READERS.get(path.suffix.lower())
+    if reader is None:
+        raise exceptions.UnsupportedFileTypeError(
+            f"Unsupported file type: {path.suffix or 'none'}"
+        )
     try:
-        # Plain string passed directly.
-        if not document.endswith(('.pdf', '.txt', '.docx', '.md')):
-            return document.strip()  # If it's not a file, treat it as raw text and return it.
-
-        # Text-based documents, read the content and return it as a string.
-        if document.endswith(('.txt', '.md')):
-            try:
-                with open(document, 'r', encoding='utf-8') as f:
-                    return f.read().strip()
-            except Exception as e:
-                raise HTTPException(status_code=500, detail=f"Error occurred while reading text document: {str(e)}")
-        # PDF documents
-        if(document.endswith('.pdf')):
-            text = ""
-            try:
-                with open(document, 'rb') as f:
-
-                    reader_pdf = PdfReader(f)
-                    for i in range(len(reader_pdf.pages)):
-                        page = reader_pdf.pages[i]
-                        text += page.extract_text()
-                return text.strip()   
-            except Exception as e:
-                raise HTTPException(status_code=500, detail=f"Error occurred while reading PDF document: {str(e)}")
-        # Word docuements
-        if(document.endswith('.docx')):
-            try:
-                doc = docx.Document(document)
-                text = "\n".join([para.text for para in doc.paragraphs])
-                return text.strip()
-            except Exception as e:
-                raise HTTPException(status_code=500, detail=f"Error occurred while reading Word document: {str(e)}")
-    except FileNotFoundError:
-        raise HTTPException(status_code=404, detail=f"File not found: {document}")
+        return reader(path).strip()
+    except exceptions.SumudError:
+        raise                                   # keep our own messages (e.g. password-protected)
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error occurred while reading document: {str(e)}")
+        raise exceptions.DocumentReadError(f"Could not read the {path.suffix} document") from e

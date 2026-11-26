@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
-import { ingestDocument, getRecordsCount, ingestCV, getCV } from '../services/api'
+import { 
+    ingestDocument, getRecordsCount, getCV, upload_CV } from '../services/api'
 import axios from 'axios'
 
 function Spinner() {
@@ -27,24 +28,44 @@ export default function Settings() {
         getRecordsCount()
             .then(res => setCount(res.data))
             .catch(err => console.error(err))
-    }, [])
+
+        const timer = setTimeout(() => {
+            setMessage('');
+        }, 10000);
+        return () => clearTimeout(timer);
+        
+    }, [message])
+
+    const getMessageColor = (msg) => {
+        if (msg.startsWith('✓')) return 'text-[#007A3D]';
+        if (msg.startsWith('✗')) return 'text-[#C8102E]';
+        if (msg.startsWith('ℹ')) return 'text-yellow-600';
+        return 'text-gray-700'; // Default fallback
+    };
+    
 
     const ingestFile = async (file) => {
         
         setLoading(true)
         setMessage(null)
-        
         try {
             const res = await ingestDocument(file)
-            if(res.data.message){
+            
+            if(res.data?.message?.includes("ingested successfully")){
                 setMessage(`✓ ${file.name} ingested successfully`)
                 const res = await getRecordsCount()
                 setCount(res.data)
             }
+
                 
         } catch (err) {
-            setMessage(`✗ Failed to ingest ${file.name}`)
-            console.error(err)
+            if(err.response?.status === 409) setMessage(`ℹ ${err.response?.data?.detail}`)
+            else if (err.response?.status === 401) setMessage(`ℹ ${err.response?.data?.detail}`)
+            else if (err.repsonse?.status === 403) setMessage(`ℹ ${err.response?.data?.detail}`)
+            else {
+                setMessage(`✗ Failed to ingest ${file.name}, ${err.response?.data?.detail}`)
+            }
+            
         } finally {
             setLoading(false)
         }
@@ -55,10 +76,23 @@ export default function Settings() {
         formData.append('file', file)
         setCvLoading(true)
         try {
-            const res = await ingestCV(file)
+            const uploadRes = await upload_CV(file)
+
+            if(uploadRes.data.message == `A CV with the name ${file.name} is already uploaded.`){
+                setMessage(`✗ A CV with the name ${file.name} is already uploaded.`)
+                return
+            }
+
+            const ingestRes = await ingestDocument(file)
+
+            if(ingestRes.data.message.includes("is already ingested.")){
+                setMessage(`✗ A document with the name ${file.name} is already ingested.`)
+                return
+            }
+            
             
 
-            setCvUrl(`${import.meta.env.VITE_BASE_URL}${res.data.cv_url}`)
+            setCvUrl(`${import.meta.env.VITE_BASE_URL}${uploadRes.data.cv_url}`)
         } catch (err) {
             console.error(err)
             alert('CV upload failed')
@@ -85,12 +119,15 @@ export default function Settings() {
     const handleFileSelect = (e) => {
         const file = e.target.files[0]
         if (file) ingestFile(file)
+        
     }
 
     const handleCvSelect = (e) => {
         const file = e.target.files[0]
         if (file) uploadCV(file)
     }
+
+    
 
     return (
         <div className="page-inner">
@@ -142,7 +179,7 @@ export default function Settings() {
                             <p className="text-[#A0A0A0] text-xs">
                                 or click to browse
                             </p>
-                            <p className="text-[#2E2E2E] text-xs mt-2">
+                            <p className="text-[#A0A0A0] text-xs mt-2">
                                 PDF, TXT, DOCX, MD
                             </p>
                         </div>
@@ -158,11 +195,7 @@ export default function Settings() {
                         {loading && <Spinner />}
 
                         {message && (
-                            <p className={`mt-3 text-sm ${
-                                message.startsWith('✓') 
-                                    ? 'text-[#007A3D]' 
-                                    : 'text-[#C8102E]'
-                            }`}>
+                            <p className={`mt-3 text-sm ${ getMessageColor(message) }`}>
                                 {message}
                             </p>
                         )}
