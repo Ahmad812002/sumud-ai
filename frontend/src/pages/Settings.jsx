@@ -50,7 +50,6 @@ export default function Settings() {
         setMessage(null)
         try {
             const res = await ingestDocument(file)
-            console.log(res.data)
             
             if(res.data?.message?.includes("ingested successfully")){
                 setMessage(`✓ ${file.name} ingested successfully`)
@@ -60,8 +59,6 @@ export default function Settings() {
 
                 
         } catch (err) {
-            console.log(err.response?.status)
-            console.log(err.response?.data?.detail)
             if(err.response?.status === 409) setMessage(`ℹ ${err.response?.data?.detail}`)
             else if (err.response?.status === 401) setMessage(`ℹ ${err.response?.data?.detail}`)
             else if (err.repsonse?.status === 403) setMessage(`ℹ ${err.response?.data?.detail}`)
@@ -87,7 +84,7 @@ export default function Settings() {
             }
 
             const ingestRes = await ingestDocument(file)
-            console.log(ingestRes.data)
+
             if(ingestRes.data.message.includes("is already ingested.")){
                 setMessage(`✗ A document with the name ${file.name} is already ingested.`)
                 return

@@ -15,7 +15,6 @@ class CoverLetterRequest(BaseModel):
 
 @router.post("/cover_letter")
 def generate_cover_letter(request: CoverLetterRequest): 
-    print("cover letter endpoint", flush=True)
     return run_cover_letter(
             request.profile_chunks,
             request.job_description,

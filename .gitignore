@@ -31,3 +31,15 @@ needs.txt
 docs/V0_1.txt
 business model.txt
 datachroma_db/
+SEO needs.txt
+sumud_costs.txt
+
+
+
+
+business_logic/auth_logic.py
+clients/chromadb_client.py
+clients/open_ai_client.py
+clients/supabase_client.py
+requirements.txt
+routers/routers_auth.py

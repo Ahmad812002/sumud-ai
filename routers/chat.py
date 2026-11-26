@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 from fastapi import APIRouter, HTTPException
 from fastapi.responses import StreamingResponse
-from clients.client import initialize_client
+from clients.open_ai_client import initialize_client
 from business_logic.chat_logic import process_chat, process_chat_stream
 import json
 import asyncio
@@ -29,7 +29,7 @@ def chat_bot(request: ChatRequest):
         print(e)
         raise HTTPException(status_code=500, detail=str(e))
 
-router.post("/chat/stream")
+@router.post("/chat/stream")
 async def chat_stream(request: ChatRequest):
     async def event_generator():
         try:

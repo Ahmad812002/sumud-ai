@@ -35,7 +35,6 @@ export default function JobScorer() {
             setCoverLetter(null)
             const res = await scoreJob(jobDescription)
             setScorerResult(res.data)
-            console.log(res.data)
         } catch (err) {
             console.error(err)
             alert('Scoring failed. Make sure the backend is running.')

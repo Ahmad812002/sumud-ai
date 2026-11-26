@@ -1,10 +1,11 @@
-import asyncio
+import asyncio, clients.llm as llm
 import json
 import os
 import sys
 import unittest
 from types import SimpleNamespace
 from unittest.mock import patch
+from clients.llm import llm_chat_stream
 
 os.environ.setdefault("GEMINI_API_KEY", "fake-test-key")
 os.environ.setdefault("NOMIC_API_KEY", "fake-test-key")
@@ -44,7 +45,7 @@ class FakeClient:
 class ChatStreamingTests(unittest.TestCase):
     def test_llm_stream_yields_fake_delta_chunks(self):
         with patch.object(llm, "client", FakeClient()):
-            chunks = list(llm.llm_chat_stream("Test prompt", "Test message"))
+            chunks = list(llm_chat_stream("Test prompt", "Test message"))
 
         self.assertEqual(chunks, ["Hello ", "from ", "the fake LLM"])
 

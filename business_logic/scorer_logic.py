@@ -16,8 +16,6 @@ def process_job_description(job_description):
     if profile_chunks:
         return profile_chunks
     return None
-    
-
 
 def format_scorer_result_json(ai_reply):
     try:

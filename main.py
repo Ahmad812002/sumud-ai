@@ -56,6 +56,8 @@ STATUS_MAP = {
     exceptions.LLMResponseError: 502,
     exceptions.LLMUnavailableError: 503,
     exceptions.ExternalServiceError: 502,
+    exceptions.UserAlreadyExistsError: 409,
+    exceptions.DatabaseError: 503,
 }
 
 @app.exception_handler(exceptions.SumudError)

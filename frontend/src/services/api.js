@@ -57,7 +57,7 @@ export const streamChatWithAi = async (message, onDelta, onDone, onError) => {
         if (done) break
 
         buffer += decoder.decode(value, { stream: true })
-        const events = buffer.split('\n\n')
+        const events = buffer.split('\n')
         buffer = events.pop() || ''
 
         for (const event of events) {

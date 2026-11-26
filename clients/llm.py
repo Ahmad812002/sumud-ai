@@ -1,13 +1,13 @@
-from clients import client
+from clients import open_ai_client
 import openai, logging
 import exceptions
 
-_client = client.initialize_client()
-messages_arr = []
+_client = open_ai_client.initialize_client()
+messages = []
 
 logger = logging.getLogger(__name__)
 
-_client = client.initialize_client()
+_client = open_ai_client.initialize_client()
 MODEL = "gemini-3.5-flash-lite"
 
 
@@ -48,9 +48,6 @@ def _call_llm(feature: str, **kwargs) -> str:
     return choice.message.content
 
 
-
-
-
 # LLM function to generate a job fit score based on the job description and user preferences
 def llm_scorer(prompt, job_description) -> str:
     return _call_llm(
@@ -76,6 +73,7 @@ def llm_cover_letter(prompt, job_description) -> str:
 
 # LLM function to generate chat_bot
 def llm_chat(prompt, message) -> str:
+    
     return _call_llm(
         "chat",
         messages=[prompt, {"role": "user", "content": message}],
@@ -83,3 +81,26 @@ def llm_chat(prompt, message) -> str:
         reasoning_effort="high",
         temperature=1.0,
     )
+
+
+def llm_chat_stream(prompt, message):
+    """Yield chat response text chunks as the model generates them."""
+    messages.append([prompt, {"role": "user", "content": message}])
+    response = _call_llm(
+        "chat_streamer",
+        messages=messages[-10:],
+        temperature=1.0,
+        reasoning_effort="high",
+        max_tokens=2048,
+        stream=True,
+    )
+
+    for chunk in response:
+        print(chunk)
+        if not chunk:
+            continue
+
+        delta = chunk[0].delta
+        content = getattr(delta, "content", None)
+        if content:
+            yield content
