@@ -23,3 +23,18 @@ uploads/
 .idea/
 .DS_Store
 Thumbs.db
+
+.gitignore
+
+SEO needs.txt
+business model.txt
+business_logic/auth_logic.py
+clients/chromadb_client.py
+clients/open_ai_client.py
+clients/supabase_client.py
+datachroma_db/
+needs.txt
+nixpacks.toml
+routers/routers_auth.py
+screen_record_1.mp4
+sumud_costs.txt
