@@ -1,8 +1,8 @@
 from fastapi import FastAPI, APIRouter, Request
-from fastapi.responses import FileResponse, JSONResponse
+from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 from requests.help import main
-from routers import documents, scorer, chat, cover_letter, preferences
+from routers import documents, scorer, chat, cover_letter, preferences, users
 from fastapi.middleware.cors import CORSMiddleware
 import os, logging, exceptions
 
@@ -73,16 +73,12 @@ async def unhandled_error_handler(request: Request, exc: Exception):
     return JSONResponse(status_code=500, content={"detail": "Internal server error"})
 
 
-@app.get("/")
-
-def root():
-    return FileResponse("static/index.html")
-
 app.include_router(scorer.router, prefix="/api/v1", tags=["scorer"])
 app.include_router(chat.router, prefix="/api/v1", tags=["chat"])
 app.include_router(cover_letter.router, prefix="/api/v1", tags=["cover-letter"])
 app.include_router(preferences.router, prefix="/api/v1", tags=["preferences"])
 app.include_router(documents.router, prefix="/api/v1", tags=["documents"])
+app.include_router(users.router, prefix="/api/v1", tags=["users"])
 
 
 if __name__ == "__main__":

@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 from fastapi import APIRouter
-from clients.client import initialize_client
+from clients.open_ai_client import initialize_client
 from business_logic.chat_logic import process_chat
 
 # Initialize the OpenAI client with the API key and base URL for OpenRouter.

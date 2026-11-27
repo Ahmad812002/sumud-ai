@@ -1,0 +1,30 @@
+# Editor
+.vscode/
+
+# Python
+__pycache__/
+ENV_DIR/
+
+# Node
+node_modules/
+
+# Secrets: never commit real keys
+.env
+.env.*
+!.env.example
+
+# Local data
+datachroma_db/
+knowledge_base/
+
+# Private business notes and media
+SEO needs.txt
+business model.txt
+needs.txt
+sumud_costs.txt
+sumud_ai_business_model_Full.pdf
+sumud_ai_business_model_OnePage.pdf
+screen_record_1.mp4
+
+# Deployment config (remove this line when you want to commit it)
+nixpacks.toml

@@ -1,13 +1,11 @@
-from clients import client
+from clients.open_ai_client import initialize_client
 import openai, logging
 import exceptions
 
-_client = client.initialize_client()
+_client = initialize_client()
 messages_arr = []
 
 logger = logging.getLogger(__name__)
-
-_client = client.initialize_client()
 MODEL = "gemini-3.5-flash-lite"
 
 
