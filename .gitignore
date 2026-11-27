@@ -1,0 +1,21 @@
+.vscode/
+SEO needs.txt
+__pycache__/
+business model.txt
+business_logic/__pycache__/
+clients/__pycache__/
+config/__pycache__/
+data_access/__pycache__/
+datachroma_db/
+frontend/node_modules/
+knowledge_base/
+needs.txt
+nixpacks.toml
+node_modules/
+routers/__pycache__/
+screen_record_1.mp4
+sumud_ai_business_model_Full.pdf
+sumud_ai_business_model_OnePage.pdf
+sumud_costs.txt
+utils/__pycache__/
+.env
