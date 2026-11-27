@@ -1,3 +1,4 @@
+
 # Editor
 .vscode/
 
@@ -28,3 +29,14 @@ screen_record_1.mp4
 
 # Deployment config (remove this line when you want to commit it)
 nixpacks.toml
+
+
+# Cashes
+business_logic/__pycache__/
+clients/__pycache__/
+config/__pycache__/
+data_access/__pycache__/
+frontend/node_modules/
+node_modules/
+routers/__pycache__/
+utils/__pycache__/
