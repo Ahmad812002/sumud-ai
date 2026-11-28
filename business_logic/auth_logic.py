@@ -1,14 +1,15 @@
 from supabase_auth.errors import AuthError
 import exceptions
 from data_access import db
-from main import logger
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 def sign_up_user(email: str, password: str) -> str:
     user_id = db.create_auth_user(email, password)
-
     try: 
-        db.create_profile(user_id)
+        db.create_profile_user(user_id)
     except exceptions.DatabaseError:
         try:
             db.delete_auth_user(user_id)

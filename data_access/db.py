@@ -1,8 +1,7 @@
 import chromadb
 import os
-
 from chromadb.auth import AuthError
-
+from clients import supabase_client
 from business_logic.auth_logic import translate_auth_error
 from clients.supabase_client import get_supabase
 import exceptions
@@ -57,7 +56,7 @@ def delete_old_cv_chunks(keep_fingerprint):
 
 def create_auth_user(email: str, password: str) -> str:
     try:
-        res = supabase_client.auth.admin.create_user({
+        res = get_supabase().auth.admin.create_user({
             "email": email.strip().lower(),
             "password": password,
             "email_confirm": True,  # mark as confirmed so they can log in right away

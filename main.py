@@ -2,7 +2,7 @@ from fastapi import FastAPI, APIRouter, Request
 from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 from requests.help import main
-from routers import documents, scorer, chat, cover_letter, preferences, users
+from routers import documents, scorer, chat, cover_letter, preferences, auth
 from fastapi.middleware.cors import CORSMiddleware
 import os, logging, exceptions
 
@@ -78,7 +78,7 @@ app.include_router(chat.router, prefix="/api/v1", tags=["chat"])
 app.include_router(cover_letter.router, prefix="/api/v1", tags=["cover-letter"])
 app.include_router(preferences.router, prefix="/api/v1", tags=["preferences"])
 app.include_router(documents.router, prefix="/api/v1", tags=["documents"])
-app.include_router(users.router, prefix="/api/v1", tags=["users"])
+app.include_router(auth.router, prefix="/api/v1", tags=["users"])
 
 
 if __name__ == "__main__":
