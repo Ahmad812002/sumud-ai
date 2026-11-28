@@ -1,7 +1,6 @@
 import chromadb
 import os
-from chromadb.auth import AuthError
-from clients import supabase_client
+from supabase_auth.errors import AuthError
 from business_logic.auth_logic import translate_auth_error
 from clients.supabase_client import get_supabase
 import exceptions
