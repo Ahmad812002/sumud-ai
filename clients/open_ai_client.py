@@ -11,8 +11,10 @@ def initialize_client():
     try:
         gemini_key = os.environ.get("GEMINI_API_KEY")
         nomic_key = os.environ.get("NOMIC_API_KEY")
+        print("nomic: ", nomic_key)
+        print("gemini",gemini_key)
 
-        if not gemini_key or nomic_key:
+        if not gemini_key or not nomic_key:
             raise InvalidInputError("Missing GEMINI_API_KEY or NOMIC_API_KEY in .env")
         client = OpenAI(
             # This is the API key which is inside .env file.
